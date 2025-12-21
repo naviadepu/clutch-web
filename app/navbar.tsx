@@ -15,12 +15,6 @@ export default function Navbar() {
           Clutch
         </h1>
       </div>
-
-      {/* Navigation - Far Right (Optional) */}
-      <div className="pointer-events-auto hidden md:flex gap-8 text-sm font-medium uppercase tracking-widest text-[#4A4A4A]">
-        <a href="#features" className="hover:underline underline-offset-4">Features</a>
-        <a href="#mission" className="hover:underline underline-offset-4">Mission</a>
-      </div>
     </nav>
   );
 }
