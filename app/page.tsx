@@ -12,19 +12,38 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center pt-24 pb-16">
-        {/* Gingham Container - full width, centered vertically */}
-        <div className="relative z-10 bg-gingham w-full py-12 md:py-16 px-6 md:px-12">
-          <div className="max-w-7xl mx-auto flex items-center justify-center">
-            {/* Catchline - Romantic Font Style, centered */}
-            <p 
-              className="text-4xl md:text-5xl lg:text-6xl text-[#D23669] font-semibold text-center"
-              style={{ fontFamily: 'var(--font-cormorant), serif' }}
-            >
-              femin<span className="relative inline-block">
-                <span className="absolute -top-1 left-1/2 transform -translate-x-1/2 text-base md:text-lg">✦</span>
-                i
-              </span>ne health on standby
-            </p>
+        {/* Gingham Container - full width */}
+        <div className="relative z-10 bg-gingham w-full pt-12 pb-8 md:pt-16 md:pb-10 px-8 md:px-16">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+
+              {/* Left Side - Icon */}
+              <div className="shrink-0">
+                <img
+                  src="/images/typewriter.png"
+                  alt="Typewriter icon"
+                  className="w-96 h-96 md:w-[500px] md:h-[500px] object-contain"
+                  style={{ background: 'transparent' }}
+                />
+              </div>
+
+              {/* Right Side - Stacked Text */}
+              <div className="flex-1 text-center md:text-left">
+                <div
+                  className="text-[#D23669] leading-[0.9]"
+                  style={{
+                    fontFamily: 'var(--font-playfair), serif',
+                    fontWeight: 700,
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase" style={{ fontWeight: 700 }}>FEMININE</div>
+                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase" style={{ fontWeight: 700 }}>HELP</div>
+                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase" style={{ fontWeight: 700 }}>ON YOUR</div>
+                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase" style={{ fontWeight: 700 }}>STANDBY!</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
