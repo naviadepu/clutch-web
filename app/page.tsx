@@ -1,5 +1,6 @@
 import SnowyBackground from "./snowybg";
 import Navbar from "./navbar";
+import EnvelopeAnimation from "./envelopeanimation";
 
 export default function Home() {
   return (
@@ -18,11 +19,11 @@ export default function Home() {
             <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
 
               {/* Left Side - Icon */}
-              <div className="shrink-0">
+              <div className="shrink-0 flex items-center justify-center">
                 <img
-                  src="/images/typewriter.png"
+                  src="/images/typewriter2.png"
                   alt="Typewriter icon"
-                  className="w-96 h-96 md:w-[500px] md:h-[500px] object-contain"
+                  className="w-auto h-80 md:h-96 object-contain max-w-full"
                   style={{ background: 'transparent' }}
                 />
               </div>
@@ -47,6 +48,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Envelope Animation Section */}
+      <EnvelopeAnimation />
     </main>
   );
 }
