@@ -2,7 +2,7 @@
 
 Clutch is a **cute, modern web landing page** built to showcase the vision, features, and impact of **Clutch**, a community-driven menstrual product sharing and support platform.
 
-This site is intentionally simple and aesthetic — designed to clearly communicate *what Clutch is*, *why it matters*, and *what we’re building*, while serving as a polished entry point for users, collaborators, and potential supporters.
+This site is intentionally simple and aesthetic  designed to clearly communicate *what Clutch is*, *why it matters*, and *what we’re building*, while serving as a polished entry point for users, collaborators, and potential supporters.
 
 ---
 
