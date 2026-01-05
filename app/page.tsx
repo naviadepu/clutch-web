@@ -38,10 +38,10 @@ export default function Home() {
                     letterSpacing: '0.02em',
                   }}
                 >
-                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase" style={{ fontWeight: 700 }}>FEMININE</div>
-                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase" style={{ fontWeight: 700 }}>HELP</div>
-                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase" style={{ fontWeight: 700 }}>ON YOUR</div>
-                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase" style={{ fontWeight: 700 }}>STANDBY!</div>
+                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase animate-fadeInUp" style={{ fontWeight: 700, animationDelay: '0ms' }}>FEMININE</div>
+                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase animate-fadeInUp" style={{ fontWeight: 700, animationDelay: '150ms' }}>HELP</div>
+                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase animate-fadeInUp" style={{ fontWeight: 700, animationDelay: '300ms' }}>ON YOUR</div>
+                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase animate-fadeInUp" style={{ fontWeight: 700, animationDelay: '450ms' }}>STANDBY!</div>
                 </div>
               </div>
             </div>
