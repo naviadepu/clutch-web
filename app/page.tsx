@@ -28,20 +28,24 @@ export default function Home() {
                                 />
                             </div>
 
-              {/* Right Side - Stacked Text */}
-              <div className="flex-1 text-center md:text-left">
-                <div
-                  className="text-[#D23669] leading-[0.9]"
-                  style={{
-                    fontFamily: 'var(--font-playfair), serif',
-                    fontWeight: 700,
-                    letterSpacing: '0.02em',
-                  }}
-                >
-                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase animate-fadeInUp" style={{ fontWeight: 700, animationDelay: '0ms' }}>FEMININE</div>
-                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase animate-fadeInUp" style={{ fontWeight: 700, animationDelay: '150ms' }}>HELP</div>
-                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase animate-fadeInUp" style={{ fontWeight: 700, animationDelay: '300ms' }}>ON YOUR</div>
-                  <div className="text-6xl md:text-7xl lg:text-8xl uppercase animate-fadeInUp" style={{ fontWeight: 700, animationDelay: '450ms' }}>STANDBY!</div>
+                            {/* Right Side - Stacked Text */}
+                            <div className="flex-1 text-center md:text-left">
+                                <div
+                                    className="text-[#D23669] leading-[0.9]"
+                                    style={{
+                                        fontFamily: 'var(--font-playfair), serif',
+                                        fontWeight: 700,
+                                        letterSpacing: '0.02em',
+                                    }}
+                                >
+                                    <div className="text-6xl md:text-7xl lg:text-8xl uppercase" style={{ fontWeight: 700 }}>FEMININE</div>
+                                    <div className="text-6xl md:text-7xl lg:text-8xl uppercase" style={{ fontWeight: 700 }}>HELP</div>
+                                    <div className="text-6xl md:text-7xl lg:text-8xl uppercase" style={{ fontWeight: 700 }}>ON YOUR</div>
+                                    <div className="text-6xl md:text-7xl lg:text-8xl uppercase" style={{ fontWeight: 700 }}>STANDBY!</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
