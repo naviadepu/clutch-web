@@ -270,62 +270,64 @@ export default function Home() {
                                 <p className="mt-6 text-lg md:text-xl text-gray-700 animate-fadeInUp" style={{ fontFamily: 'var(--font-cormorant), serif', animationDelay: '0.7s' }}>
                                     A women-focused menstrual product sharing and accessibility app for college campuses.
                                 </p>
+{/* CTA Button with Animation - Retro Pixel Art Style (Responsive) */}
+<div className="mt-4 animate-fadeInUp" style={{ animationDelay: '0.8s' }}>
+  <div className="relative inline-block">
+    {/* Pixel Art Window Frame */}
+    <div
+      className="relative bg-[#FFB3D9] p-0.5 md:p-1"
+      style={{
+        boxShadow: `
+          0 0 0 1px #D23669,
+          0 0 0 2px #FFB3D9,
+          0 0 0 3px #D23669,
+          2px 2px 0 3px rgba(210, 54, 105, 0.3)
+        `,
+        imageRendering: 'pixelated'
+      }}
+    >
+      {/* Window Header */}
+      <div className="bg-[#FFD6EC] border-b border-[#D23669] md:border-b-2 px-2 py-1 md:px-3 md:py-1.5 flex items-center justify-between">
+        <div className="flex gap-0.5 md:gap-1">
+          <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-[#D23669]"></div>
+          <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-[#D23669]"></div>
+          <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-[#D23669]"></div>
+        </div>
+        <div className="flex gap-1 md:gap-1.5 text-[10px] md:text-xs">
+          <span>♥</span>
+          <span>★</span>
+          <span>♥</span>
+        </div>
+      </div>
 
-                                {/* CTA Button with Animation - Retro Pixel Art Style */}
-                                <div className="mt-8 animate-fadeInUp" style={{ animationDelay: '0.8s' }}>
-                                    <div className="relative inline-block">
-                                        {/* Pixel Art Window Frame */}
-                                        <div className="relative bg-[#FFB3D9] p-1" style={{
-                                            boxShadow: `
-                                                0 0 0 2px #D23669,
-                                                0 0 0 4px #FFB3D9,
-                                                0 0 0 6px #D23669,
-                                                4px 4px 0 6px rgba(210, 54, 105, 0.3)
-                                            `,
-                                            imageRendering: 'pixelated'
-                                        }}>
-                                            {/* Window Header */}
-                                            <div className="bg-[#FFD6EC] border-b-2 border-[#D23669] px-4 py-2 flex items-center justify-between">
-                                                <div className="flex gap-1">
-                                                    <div className="w-2 h-2 bg-[#D23669]"></div>
-                                                    <div className="w-2 h-2 bg-[#D23669]"></div>
-                                                    <div className="w-2 h-2 bg-[#D23669]"></div>
-                                                </div>
-                                                <div className="flex gap-2 text-xs">
-                                                    <span>♥</span>
-                                                    <span>★</span>
-                                                    <span>♥</span>
-                                                </div>
-                                            </div>
+      {/* Button Content */}
+      <button
+        className="bg-[#FFEAF5] px-6 py-2.5 md:px-8 md:py-3 lg:px-10 lg:py-4 w-full border border-transparent hover:border-[#D23669] hover:bg-[#FFD6EC] transition-all duration-100"
+        style={{
+          fontFamily: 'monospace',
+          fontWeight: 'bold',
+          letterSpacing: '0.08em',
+          imageRendering: 'pixelated'
+        }}
+      >
+        <span className="text-[#D23669] text-sm md:text-base lg:text-lg" style={{ textShadow: '1px 1px 0 #FFB3D9' }}>access</span>
+      </button>
 
-                                            {/* Button Content */}
-                                            <button className="bg-[#FFEAF5] px-12 py-6 w-full border-2 border-transparent hover:border-[#D23669] hover:bg-[#FFD6EC] transition-all duration-100"
-                                                    style={{
-                                                        fontFamily: 'monospace',
-                                                        fontSize: '28px',
-                                                        fontWeight: 'bold',
-                                                        letterSpacing: '0.1em',
-                                                        textShadow: '2px 2px 0 #FFB3D9',
-                                                        imageRendering: 'pixelated'
-                                                    }}>
-                                                <span className="text-[#D23669]">access</span>
-                                            </button>
-
-                                            {/* Pixel Corner Decorations */}
-                                            <div className="absolute -top-1 -left-1 w-3 h-3 bg-[#D23669]"></div>
-                                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#D23669]"></div>
-                                            <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-[#D23669]"></div>
-                                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-[#D23669]"></div>
-                                        </div>
-                                    </div>
-                                </div>
+      {/* Pixel Corner Decorations */}
+      <div className="absolute -top-0.5 -left-0.5 w-1.5 h-1.5 md:w-2 md:h-2 bg-[#D23669]"></div>
+      <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 md:w-2 md:h-2 bg-[#D23669]"></div>
+      <div className="absolute -bottom-0.5 -left-0.5 w-1.5 h-1.5 md:w-2 md:h-2 bg-[#D23669]"></div>
+      <div className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 md:w-2 md:h-2 bg-[#D23669]"></div>
+    </div>
+  </div>
+</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-{/* Features Section with Envelope Animation */}
+            {/* Features Section with Envelope Animation */}
             <FeaturesSection />
 
 {/* Testimonials Section */}
