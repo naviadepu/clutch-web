@@ -77,103 +77,64 @@ function FeaturesSection() {
               />
             </div>
 
-            {/* Decorative Feature Cards Sliding Out */}
-            <div className="flex flex-row gap-8 md:gap-12 items-center">
-              {/* Card 1 - Map-Based */}
+            {/* Pink Frame Cards Sliding Out */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
+              {/* Card 1 - Request/Give Item */}
+              <div
+                  onMouseEnter={() => setHoveredFeature('give-request')}
+                  onMouseLeave={() => setHoveredFeature(null)}
+                  className={`relative transition-all duration-700 ease-out cursor-pointer ${
+                      showCards ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
+                  } ${hoveredFeature === 'give-request' ? 'scale-105' : ''}`}
+                  style={{ transitionDelay: showCards ? '400ms' : '0ms' }}
+              >
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 text-3xl">🎀</div>
+                <div className="border-4 border-[#D23669] rounded-lg bg-white p-6 hover:shadow-xl transition-all duration-300 min-h-[180px] flex flex-col justify-center">
+                  <h3 className={`${scriptFont.className} text-[#D23669] text-xl md:text-2xl font-bold text-center mb-2`}>
+                    Request/Give Item
+                  </h3>
+                  <p className="text-gray-700 text-xs md:text-sm text-center leading-relaxed" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
+                    Give and request through a supportive network of verified students.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 2 - Map */}
               <div
                   onMouseEnter={() => setHoveredFeature('map')}
                   onMouseLeave={() => setHoveredFeature(null)}
-                  className={`relative transition-all duration-700 ease-out group ${
+                  className={`relative transition-all duration-700 ease-out cursor-pointer ${
                       showCards ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
-                  }`}
-                  style={{ transitionDelay: showCards ? '400ms' : '0ms' }}
-              >
-                <img
-                    src="/images/card.png"
-                    alt="Map-Based Interface"
-                    className={`w-[220px] h-auto md:w-[260px] object-contain transition-transform duration-300 ease-out cursor-pointer ${
-                        hoveredFeature === 'map' ? 'scale-110' : ''
-                    }`}
-                    style={{ background: 'transparent', transform: 'rotate(270deg)' }}
-                />
-
-                {/* Text Overlay on Card */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center pointer-events-none transition-transform duration-300 ease-out px-10 ${
-                    hoveredFeature === 'map' ? 'scale-110' : ''
-                }`}>
-                  <h3 className="text-[#D23669] text-2xl md:text-3xl font-black text-center mb-2"
-                      style={{ fontFamily: 'var(--font-playfair), serif', fontWeight: 900, textShadow: '0 1px 2px rgba(255,255,255,0.5)' }}>
-                    Map-Based
-                  </h3>
-                  <p className="text-[#D23669] text-sm md:text-base text-center leading-tight font-bold"
-                     style={{ fontFamily: 'var(--font-cormorant), serif', fontWeight: 700 }}>
-                    Find products nearby in real-time
-                  </p>
-                </div>
-              </div>
-
-              {/* Card 2 - Community */}
-              <div
-                  onMouseEnter={() => setHoveredFeature('community')}
-                  onMouseLeave={() => setHoveredFeature(null)}
-                  className={`relative transition-all duration-700 ease-out group ${
-                      showCards ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
-                  }`}
+                  } ${hoveredFeature === 'map' ? 'scale-105' : ''}`}
                   style={{ transitionDelay: showCards ? '500ms' : '0ms' }}
               >
-                <img
-                    src="/images/card.png"
-                    alt="Community Sharing"
-                    className={`w-[220px] h-auto md:w-[260px] object-contain transition-transform duration-300 ease-out cursor-pointer ${
-                        hoveredFeature === 'community' ? 'scale-110' : ''
-                    }`}
-                    style={{ background: 'transparent', transform: 'rotate(270deg)' }}
-                />
-
-                {/* Text Overlay on Card */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center pointer-events-none transition-transform duration-300 ease-out px-10 ${
-                    hoveredFeature === 'community' ? 'scale-110' : ''
-                }`}>
-                  <h3 className="text-[#D23669] text-2xl md:text-3xl font-black text-center mb-2"
-                      style={{ fontFamily: 'var(--font-playfair), serif', fontWeight: 900, textShadow: '0 1px 2px rgba(255,255,255,0.5)' }}>
-                    Community
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 text-3xl">🎀</div>
+                <div className="border-4 border-[#D23669] rounded-lg bg-white p-6 hover:shadow-xl transition-all duration-300 min-h-[180px] flex flex-col justify-center">
+                  <h3 className={`${scriptFont.className} text-[#D23669] text-xl md:text-2xl font-bold text-center mb-2`}>
+                    Map
                   </h3>
-                  <p className="text-[#D23669] text-sm md:text-base text-center leading-tight font-bold"
-                     style={{ fontFamily: 'var(--font-cormorant), serif', fontWeight: 700 }}>
-                    Give & request through verified students
+                  <p className="text-gray-700 text-xs md:text-sm text-center leading-relaxed" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
+                    Navigate your campus with ease. Find products nearby in real-time.
                   </p>
                 </div>
               </div>
 
-              {/* Card 3 - Safe & Secure */}
+              {/* Card 3 - Community */}
               <div
-                  onMouseEnter={() => setHoveredFeature('security')}
+                  onMouseEnter={() => setHoveredFeature('community-tab')}
                   onMouseLeave={() => setHoveredFeature(null)}
-                  className={`relative transition-all duration-700 ease-out group ${
+                  className={`relative transition-all duration-700 ease-out cursor-pointer ${
                       showCards ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
-                  }`}
+                  } ${hoveredFeature === 'community-tab' ? 'scale-105' : ''}`}
                   style={{ transitionDelay: showCards ? '600ms' : '0ms' }}
               >
-                <img
-                    src="/images/card.png"
-                    alt="Safe & Secure"
-                    className={`w-[220px] h-auto md:w-[260px] object-contain transition-transform duration-300 ease-out cursor-pointer ${
-                        hoveredFeature === 'security' ? 'scale-110' : ''
-                    }`}
-                    style={{ background: 'transparent', transform: 'rotate(270deg)' }}
-                />
-
-                {/* Text Overlay on Card */}
-                <div className={`absolute inset-0 flex flex-col items-center justify-center pointer-events-none transition-transform duration-300 ease-out px-10 ${
-                    hoveredFeature === 'security' ? 'scale-110' : ''
-                }`}>
-                  <h3 className="text-[#D23669] text-2xl md:text-3xl font-black text-center mb-2"
-                      style={{ fontFamily: 'var(--font-playfair), serif', fontWeight: 900, textShadow: '0 1px 2px rgba(255,255,255,0.5)' }}>
-                    Safe & Secure
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 text-3xl">🎀</div>
+                <div className="border-4 border-[#D23669] rounded-lg bg-white p-6 hover:shadow-xl transition-all duration-300 min-h-[180px] flex flex-col justify-center">
+                  <h3 className={`${scriptFont.className} text-[#D23669] text-xl md:text-2xl font-bold text-center mb-2`}>
+                    Community
                   </h3>
-                  <p className="text-[#D23669] text-sm md:text-base text-center leading-tight font-bold"
-                     style={{ fontFamily: 'var(--font-cormorant), serif', fontWeight: 700 }}>
-                    Privacy protected with verified connections
+                  <p className="text-gray-700 text-xs md:text-sm text-center leading-relaxed" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
+                    Connect with verified students and join a supportive campus community.
                   </p>
                 </div>
               </div>
@@ -188,9 +149,9 @@ function FeaturesSection() {
                 {/* Full App Screen with Zoom Transitions */}
                 <div className="bg-gradient-to-b from-pink-50 to-white h-[600px] relative transition-all duration-500 ease-in-out"
                      style={{
-                       transform: hoveredFeature === 'map' ? 'scale(1.8) translateY(-25%)' :
-                                  hoveredFeature === 'community' ? 'scale(1.5) translateY(5%)' :
-                                  hoveredFeature === 'security' ? 'scale(1.8) translateY(35%)' : 'scale(1)',
+                       transform: hoveredFeature === 'give-request' ? 'scale(1.8) translateY(10%)' :
+                                  hoveredFeature === 'map' ? 'scale(2.2) translateY(-32%) translateX(-8%)' :
+                                  hoveredFeature === 'community-tab' ? 'scale(2.2) translateY(-32%) translateX(8%)' : 'scale(1)',
                        transformOrigin: 'center center'
                      }}>
                   {/* Header - Security Feature */}
@@ -310,14 +271,53 @@ export default function Home() {
                                     A women-focused menstrual product sharing and accessibility app for college campuses.
                                 </p>
 
-                                {/* CTA Button with Animation */}
+                                {/* CTA Button with Animation - Retro Pixel Art Style */}
                                 <div className="mt-8 animate-fadeInUp" style={{ animationDelay: '0.8s' }}>
-                                    <button
-                                        className="bg-[#D23669] hover:bg-[#B82E5A] text-white font-bold py-4 px-10 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-2xl shadow-lg text-2xl md:text-3xl uppercase animate-pulse-glow"
-                                        style={{ fontFamily: 'var(--font-playfair), serif', letterSpacing: '0.1em', fontWeight: 700 }}
-                                    >
-                                        ACCESS
-                                    </button>
+                                    <div className="relative inline-block">
+                                        {/* Pixel Art Window Frame */}
+                                        <div className="relative bg-[#FFB3D9] p-1" style={{
+                                            boxShadow: `
+                                                0 0 0 2px #D23669,
+                                                0 0 0 4px #FFB3D9,
+                                                0 0 0 6px #D23669,
+                                                4px 4px 0 6px rgba(210, 54, 105, 0.3)
+                                            `,
+                                            imageRendering: 'pixelated'
+                                        }}>
+                                            {/* Window Header */}
+                                            <div className="bg-[#FFD6EC] border-b-2 border-[#D23669] px-4 py-2 flex items-center justify-between">
+                                                <div className="flex gap-1">
+                                                    <div className="w-2 h-2 bg-[#D23669]"></div>
+                                                    <div className="w-2 h-2 bg-[#D23669]"></div>
+                                                    <div className="w-2 h-2 bg-[#D23669]"></div>
+                                                </div>
+                                                <div className="flex gap-2 text-xs">
+                                                    <span>♥</span>
+                                                    <span>★</span>
+                                                    <span>♥</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Button Content */}
+                                            <button className="bg-[#FFEAF5] px-12 py-6 w-full border-2 border-transparent hover:border-[#D23669] hover:bg-[#FFD6EC] transition-all duration-100"
+                                                    style={{
+                                                        fontFamily: 'monospace',
+                                                        fontSize: '28px',
+                                                        fontWeight: 'bold',
+                                                        letterSpacing: '0.1em',
+                                                        textShadow: '2px 2px 0 #FFB3D9',
+                                                        imageRendering: 'pixelated'
+                                                    }}>
+                                                <span className="text-[#D23669]">access</span>
+                                            </button>
+
+                                            {/* Pixel Corner Decorations */}
+                                            <div className="absolute -top-1 -left-1 w-3 h-3 bg-[#D23669]"></div>
+                                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#D23669]"></div>
+                                            <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-[#D23669]"></div>
+                                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-[#D23669]"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -325,10 +325,10 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Features Section with Envelope Animation */}
+{/* Features Section with Envelope Animation */}
             <FeaturesSection />
 
-            {/* Testimonials Section */}
+{/* Testimonials Section */}
             <section className="relative py-20 px-8 bg-gingham">
                 <div className="max-w-6xl mx-auto">
                     <h2
@@ -406,7 +406,7 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Footer with Email CTA */}
+{/* Footer with Email CTA */}
             <footer className="relative py-16 px-8 bg-[#D23669]">
                 <div className="max-w-4xl mx-auto text-center">
                     <h2
