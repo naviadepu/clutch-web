@@ -4,6 +4,7 @@ import SnowyBackground from "./snowybg";
 import Navbar from "./navbar";
 import { useEffect, useRef, useState } from 'react';
 import { Pinyon_Script } from 'next/font/google';
+import BagAnimation from "./BagAnimation";
 
 const scriptFont = Pinyon_Script({
   weight: '400',
@@ -240,13 +241,12 @@ export default function Home() {
                 <div className="relative z-10 bg-gingham w-full pt-12 pb-8 md:pt-16 md:pb-10 px-8 md:px-16">
                     <div className="max-w-6xl mx-auto">
                         <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-                            {/* Left Side - Icon with Animation */}
-                            <div className="shrink-0 flex items-center justify-center animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
-                                <img
-                                    src="/images/typewriter2.png"
-                                    alt="Typewriter icon"
-                                    className="w-auto h-80 md:h-96 object-contain max-w-full hover:scale-110 transition-transform duration-500 ease-out animate-float"
-                                    style={{ background: 'transparent' }}
+                            {/* Left Side - Animated Bag */}
+                            <div className="shrink-0 flex items-center justify-center animate-fadeInUp"
+                                 style={{ animationDelay: '0.8s' }}>
+                                <BagAnimation
+                                    className="w-auto h-80 md:h-96 hover:scale-110 transition-transform duration-500 ease-out"
+                                    speed={750}
                                 />
                             </div>
 
