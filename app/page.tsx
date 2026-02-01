@@ -150,9 +150,9 @@ function FeaturesSection() {
                 {/* Full App Screen with Zoom Transitions */}
                 <div className="bg-gradient-to-b from-pink-50 to-white h-[600px] relative transition-all duration-500 ease-in-out"
                      style={{
-                       transform: hoveredFeature === 'give-request' ? 'scale(1.8) translateY(10%)' :
-                                  hoveredFeature === 'map' ? 'scale(2.2) translateY(-32%) translateX(-8%)' :
-                                  hoveredFeature === 'community-tab' ? 'scale(2.2) translateY(-32%) translateX(8%)' : 'scale(1)',
+                       transform: hoveredFeature === 'give-request' ? 'scale(3) translateX(0%) translateY(15%)' :
+                                  hoveredFeature === 'map' ? 'scale(3) translateX(0%) translateY(-30%)' :
+                                  hoveredFeature === 'community-tab' ? 'scale(3) translateX(-25%) translateY(-30%)' : 'scale(1)',
                        transformOrigin: 'center center'
                      }}>
                   {/* Header - Security Feature */}
@@ -196,20 +196,53 @@ function FeaturesSection() {
                     </div>
                   </div>
 
-                  {/* Bottom Navigation - Map Feature */}
+                  {/* Community Section */}
+                  <div className="px-4 pb-20">
+                    <p className="text-[#D23669] text-sm mb-3 font-bold" style={{ fontFamily: 'var(--font-playfair), serif' }}>
+                      Community
+                    </p>
+                    <div className="space-y-2">
+                      <div className="bg-pink-50 p-3 rounded-xl text-sm text-gray-700 border border-[#D23669]/20 flex items-center gap-2"
+                           style={{ fontFamily: 'var(--font-cormorant), serif' }}>
+                        <span className="text-lg">👤</span>
+                        <div>
+                          <p className="font-bold text-[#D23669]" style={{ fontFamily: 'var(--font-playfair), serif' }}>Sarah M.</p>
+                          <p className="text-xs text-gray-500">Shared pads near Library</p>
+                        </div>
+                      </div>
+                      <div className="bg-pink-50 p-3 rounded-xl text-sm text-gray-700 border border-[#D23669]/20 flex items-center gap-2"
+                           style={{ fontFamily: 'var(--font-cormorant), serif' }}>
+                        <span className="text-lg">👤</span>
+                        <div>
+                          <p className="font-bold text-[#D23669]" style={{ fontFamily: 'var(--font-playfair), serif' }}>Emily R.</p>
+                          <p className="text-xs text-gray-500">Donated tampons at Dorm B</p>
+                        </div>
+                      </div>
+                      <div className="bg-pink-50 p-3 rounded-xl text-sm text-gray-700 border border-[#D23669]/20 flex items-center gap-2"
+                           style={{ fontFamily: 'var(--font-cormorant), serif' }}>
+                        <span className="text-lg">👤</span>
+                        <div>
+                          <p className="font-bold text-[#D23669]" style={{ fontFamily: 'var(--font-playfair), serif' }}>Priya K.</p>
+                          <p className="text-xs text-gray-500">Helped 3 requests today</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom Navigation */}
                   <div className="absolute bottom-0 left-0 right-0 bg-white border-t-2 border-[#D23669]/20">
                     <div className="grid grid-cols-3 gap-2 p-3">
-                      <div className="flex flex-col items-center justify-center py-2 bg-pink-50 rounded-xl border border-[#D23669]/20">
-                        <span className="text-xl mb-1">🏠</span>
-                        <span className="text-gray-600 text-xs" style={{ fontFamily: 'var(--font-cormorant), serif' }}>Home</span>
+                      <div className={`flex flex-col items-center justify-center py-2 rounded-xl ${hoveredFeature === 'give-request' ? 'bg-[#D23669] shadow-md' : 'bg-pink-50 border border-[#D23669]/20'}`}>
+                        <span className="text-xl mb-1">🎁</span>
+                        <span className={`text-xs ${hoveredFeature === 'give-request' ? 'text-white font-bold' : 'text-gray-600'}`} style={{ fontFamily: hoveredFeature === 'give-request' ? 'var(--font-playfair), serif' : 'var(--font-cormorant), serif' }}>Give/Request</span>
                       </div>
-                      <div className="flex flex-col items-center justify-center py-2 bg-[#D23669] rounded-xl shadow-md">
+                      <div className={`flex flex-col items-center justify-center py-2 rounded-xl ${hoveredFeature === 'map' ? 'bg-[#D23669] shadow-md' : 'bg-pink-50 border border-[#D23669]/20'}`}>
                         <span className="text-xl mb-1">🗺️</span>
-                        <span className="text-white text-xs font-bold" style={{ fontFamily: 'var(--font-playfair), serif' }}>Map</span>
+                        <span className={`text-xs ${hoveredFeature === 'map' ? 'text-white font-bold' : 'text-gray-600'}`} style={{ fontFamily: hoveredFeature === 'map' ? 'var(--font-playfair), serif' : 'var(--font-cormorant), serif' }}>Map</span>
                       </div>
-                      <div className="flex flex-col items-center justify-center py-2 bg-pink-50 rounded-xl border border-[#D23669]/20">
+                      <div className={`flex flex-col items-center justify-center py-2 rounded-xl ${hoveredFeature === 'community-tab' ? 'bg-[#D23669] shadow-md' : 'bg-pink-50 border border-[#D23669]/20'}`}>
                         <span className="text-xl mb-1">👥</span>
-                        <span className="text-gray-600 text-xs" style={{ fontFamily: 'var(--font-cormorant), serif' }}>Community</span>
+                        <span className={`text-xs ${hoveredFeature === 'community-tab' ? 'text-white font-bold' : 'text-gray-600'}`} style={{ fontFamily: hoveredFeature === 'community-tab' ? 'var(--font-playfair), serif' : 'var(--font-cormorant), serif' }}>Community</span>
                       </div>
                     </div>
                   </div>
@@ -241,11 +274,11 @@ export default function Home() {
                 <div className="relative z-10 bg-gingham w-full pt-12 pb-8 md:pt-16 md:pb-10 px-8 md:px-16">
                     <div className="max-w-6xl mx-auto">
                         <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-                            {/* Left Side - Animated Bag */}
-                            <div className="shrink-0 flex items-center justify-center animate-fadeInUp"
+                            {/* Left Side - Animated Bag (fixed size so text doesn't shift) */}
+                            <div className="shrink-0 w-[400px] md:w-[480px] h-[410px] md:h-[492px] flex items-center justify-center animate-fadeInUp"
                                  style={{ animationDelay: '0.8s' }}>
                                 <BagAnimation
-                                    className="w-auto h-80 md:h-96 hover:scale-110 transition-transform duration-500 ease-out"
+                                    className="w-full h-full hover:scale-110 transition-transform duration-500 ease-out"
                                     speed={750}
                                 />
                             </div>
@@ -331,79 +364,102 @@ export default function Home() {
             <FeaturesSection />
 
 {/* Testimonials Section */}
-            <section className="relative py-20 px-8 bg-gingham">
-                <div className="max-w-6xl mx-auto">
+            <section className="relative py-20 bg-gingham overflow-hidden">
+                <div className="max-w-6xl mx-auto px-8">
                     <h2
                         className="text-5xl md:text-6xl font-bold text-center text-[#D23669] mb-16"
                         style={{ fontFamily: 'var(--font-playfair), serif' }}
                     >
                         What Our Users Say
                     </h2>
+                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Testimonial 1 */}
-                        <div className="bg-white p-8 rounded-lg shadow-lg">
-                            <div className="flex items-center mb-4">
-                                <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                    S
+                {/* Scrolling testimonials */}
+                <div className="relative">
+                    <div className="flex animate-testimonialScroll hover:[animation-play-state:paused]">
+                        {[...Array(2)].map((_, dupeIdx) => (
+                            <div key={dupeIdx} className="flex shrink-0 gap-8 px-4">
+                                {/* Natasha K. - Real Testimonial */}
+                                <div className="bg-white p-8 rounded-lg shadow-lg w-[350px] shrink-0">
+                                    <div className="flex items-center mb-4">
+                                        <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                            N
+                                        </div>
+                                        <div className="ml-4">
+                                            <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Natasha K.</h4>
+                                            <p className="text-sm text-gray-600">College Student</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
+                                        &ldquo;I had to give a pad to my friend and I&apos;m really glad this app exists.&rdquo;
+                                    </p>
                                 </div>
-                                <div className="ml-4">
-                                    <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Sarah M.</h4>
-                                    <p className="text-sm text-gray-600">College Student</p>
+
+                                {/* Sarah M. */}
+                                <div className="bg-white p-8 rounded-lg shadow-lg w-[350px] shrink-0">
+                                    <div className="flex items-center mb-4">
+                                        <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                            S
+                                        </div>
+                                        <div className="ml-4">
+                                            <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Sarah M.</h4>
+                                            <p className="text-sm text-gray-600">College Student</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
+                                        &ldquo;Clutch has been a lifesaver! I never worry about being caught unprepared anymore. The community is so supportive!&rdquo;
+                                    </p>
+                                </div>
+
+                                {/* Emily K. */}
+                                <div className="bg-white p-8 rounded-lg shadow-lg w-[350px] shrink-0">
+                                    <div className="flex items-center mb-4">
+                                        <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                            E
+                                        </div>
+                                        <div className="ml-4">
+                                            <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Emily K.</h4>
+                                            <p className="text-sm text-gray-600">Graduate Student</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
+                                        &ldquo;The map feature makes it so easy to find help nearby. It&apos;s amazing how this app brings our campus community together!&rdquo;
+                                    </p>
+                                </div>
+
+                                {/* Maya P. */}
+                                <div className="bg-white p-8 rounded-lg shadow-lg w-[350px] shrink-0">
+                                    <div className="flex items-center mb-4">
+                                        <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                            M
+                                        </div>
+                                        <div className="ml-4">
+                                            <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Maya P.</h4>
+                                            <p className="text-sm text-gray-600">Sophomore</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
+                                        &ldquo;I love how safe and private this platform is. It&apos;s empowering to help others while also having access to help when I need it.&rdquo;
+                                    </p>
+                                </div>
+
+                                {/* Lisa T. */}
+                                <div className="bg-white p-8 rounded-lg shadow-lg w-[350px] shrink-0">
+                                    <div className="flex items-center mb-4">
+                                        <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                            L
+                                        </div>
+                                        <div className="ml-4">
+                                            <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Lisa T.</h4>
+                                            <p className="text-sm text-gray-600">Junior</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
+                                        &ldquo;Clutch has completely changed how I navigate emergencies on campus. The community support is incredible!&rdquo;
+                                    </p>
                                 </div>
                             </div>
-                            <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
-                                "Clutch has been a lifesaver! I never worry about being caught unprepared anymore. The community is so supportive!"
-                            </p>
-                        </div>
-
-                        {/* Testimonial 2 */}
-                        <div className="bg-white p-8 rounded-lg shadow-lg">
-                            <div className="flex items-center mb-4">
-                                <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                    E
-                                </div>
-                                <div className="ml-4">
-                                    <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Emily K.</h4>
-                                    <p className="text-sm text-gray-600">Graduate Student</p>
-                                </div>
-                            </div>
-                            <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
-                                "The map feature makes it so easy to find help nearby. It's amazing how this app brings our campus community together!"
-                            </p>
-                        </div>
-
-                        {/* Testimonial 3 */}
-                        <div className="bg-white p-8 rounded-lg shadow-lg">
-                            <div className="flex items-center mb-4">
-                                <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                    M
-                                </div>
-                                <div className="ml-4">
-                                    <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Maya P.</h4>
-                                    <p className="text-sm text-gray-600">Sophomore</p>
-                                </div>
-                            </div>
-                            <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
-                                "I love how safe and private this platform is. It's empowering to help others while also having access to help when I need it."
-                            </p>
-                        </div>
-
-                        {/* Testimonial 4 */}
-                        <div className="bg-white p-8 rounded-lg shadow-lg">
-                            <div className="flex items-center mb-4">
-                                <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                    L
-                                </div>
-                                <div className="ml-4">
-                                    <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Lisa T.</h4>
-                                    <p className="text-sm text-gray-600">Junior</p>
-                                </div>
-                            </div>
-                            <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
-                                "Clutch has completely changed how I navigate emergencies on campus. The community support is incredible!"
-                            </p>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </section>

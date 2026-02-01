@@ -118,6 +118,19 @@
   .animate-pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
   }
+
+  @keyframes testimonialScroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-testimonialScroll {
+    animation: testimonialScroll 25s linear infinite;
+  }
 }
 
 body {

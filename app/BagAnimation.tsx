@@ -26,7 +26,7 @@ const BagAnimation = ({ className = "", speed = 150 }) => {
                 alt="Animated bag with items"
                 className="w-full h-full object-contain"
                 style={{
-                    imageRendering: 'crisp-edges',
+                    imageRendering: 'auto',
                     background: 'transparent'
                 }}
             />
