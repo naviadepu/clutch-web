@@ -334,8 +334,9 @@ export default function Home() {
       </div>
 
       {/* Button Content */}
-      <button
-        className="bg-[#FFEAF5] px-6 py-2.5 md:px-8 md:py-3 lg:px-10 lg:py-4 w-full border border-transparent hover:border-[#D23669] hover:bg-[#FFD6EC] transition-all duration-100"
+      <a
+        href="/access"
+        className="block bg-[#FFEAF5] px-6 py-2.5 md:px-8 md:py-3 lg:px-10 lg:py-4 w-full border border-transparent hover:border-[#D23669] hover:bg-[#FFD6EC] transition-all duration-100 text-center"
         style={{
           fontFamily: 'monospace',
           fontWeight: 'bold',
@@ -344,7 +345,7 @@ export default function Home() {
         }}
       >
         <span className="text-[#D23669] text-sm md:text-base lg:text-lg" style={{ textShadow: '1px 1px 0 #FFB3D9' }}>access</span>
-      </button>
+      </a>
 
       {/* Pixel Corner Decorations */}
       <div className="absolute -top-0.5 -left-0.5 w-1.5 h-1.5 md:w-2 md:h-2 bg-[#D23669]"></div>
