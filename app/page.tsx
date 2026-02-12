@@ -319,8 +319,8 @@ function FeaturesSection() {
             </div>
 
             {/* Instruction Text */}
-            <p className="text-center text-[#D23669] text-base mt-6 font-semibold" style={{ fontFamily: 'var(--font-dancing), cursive' }}>
-              Hover over the cards above to see each feature in action ✨
+            <p className="text-center text-[#D23669] text-base mt-6 font-semibold" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
+              Hover over the cards above to see each feature in action
             </p>
           </div>
         </div>

@@ -94,7 +94,7 @@ export default function AccessPage() {
                                     className="text-[#D23669] font-bold text-lg sm:text-xl"
                                     style={{ fontFamily: 'var(--font-playfair), serif' }}
                                 >
-                                    Thanks for signing up! Please be in the lookout for our upcoming newsletters 
+                                    Thanks for signing up! Please be in the lookout for our upcoming newsletters
                                 </p>
                                 <p
                                     className="text-gray-600 mt-2 text-sm sm:text-base"
