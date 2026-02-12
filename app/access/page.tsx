@@ -74,6 +74,8 @@ export default function AccessPage() {
 
                     {/* Content */}
                     <div className="bg-[#FFEAF5] p-5 sm:p-8">
+                        {status !== 'success' && (
+                        <>
                         <h1
                             className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#D23669] text-center mb-2 sm:mb-3"
                             style={{ fontFamily: 'var(--font-playfair), serif' }}
@@ -86,6 +88,8 @@ export default function AccessPage() {
                         >
                             Enter your email to be the first to know when Clutch launches.
                         </p>
+                        </>
+                        )}
 
                         {status === 'success' ? (
                             <div className="text-center py-4">
