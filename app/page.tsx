@@ -11,6 +11,74 @@ const scriptFont = Pinyon_Script({
   subsets: ['latin'],
 });
 
+function FooterForm() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.ok) {
+        setStatus('success');
+        setEmail('');
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
+  };
+
+  if (status === 'success') {
+    return (
+      <div className="text-center px-2">
+        <div className="inline-flex items-center gap-2 bg-white/20 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-full">
+          <span className="text-xl sm:text-2xl">♥</span>
+          <span style={{ fontFamily: 'var(--font-cormorant), serif' }} className="text-base sm:text-lg">
+            Thanks for signing up! We can&apos;t wait to have you.
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center max-w-[90vw] sm:max-w-md mx-auto px-2 sm:px-0">
+      <input
+        type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter your email"
+        className="w-full sm:flex-1 px-4 sm:px-6 py-3 sm:py-4 rounded-full text-gray-800 focus:outline-none focus:ring-4 focus:ring-white/50 text-sm sm:text-base"
+        style={{ fontFamily: 'var(--font-cormorant), serif' }}
+        disabled={status === 'loading'}
+      />
+      <button
+        type="submit"
+        disabled={status === 'loading'}
+        className="w-full sm:w-auto bg-white text-[#D23669] font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 text-sm sm:text-base"
+        style={{ fontFamily: 'var(--font-playfair), serif', letterSpacing: '0.05em' }}
+      >
+        {status === 'loading' ? 'SENDING...' : 'SUBSCRIBE'}
+      </button>
+      {status === 'error' && (
+        <p className="w-full text-white/90 text-sm text-center mt-2" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
+          Something went wrong. Please try again.
+        </p>
+      )}
+    </form>
+  );
+}
+
 function FeaturesSection() {
   const [isOpen, setIsOpen] = useState(false);
   const [showCards, setShowCards] = useState(false);
@@ -466,36 +534,23 @@ export default function Home() {
             </section>
 
 {/* Footer with Email CTA */}
-            <footer className="relative py-16 px-8 bg-[#D23669]">
+            <footer className="relative py-10 sm:py-16 px-4 sm:px-8 bg-[#D23669]">
                 <div className="max-w-4xl mx-auto text-center">
                     <h2
-                        className="text-4xl md:text-5xl font-bold text-white mb-4"
+                        className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4"
                         style={{ fontFamily: 'var(--font-playfair), serif' }}
                     >
                         Join Our Community
                     </h2>
-                    <p className="text-white text-lg md:text-xl mb-8" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
+                    <p className="text-white text-base sm:text-lg md:text-xl mb-6 sm:mb-8 px-2" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
                         Get early access and stay updated on our launch!
                     </p>
 
                     {/* Email Signup Form */}
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            className="w-full sm:flex-1 px-6 py-4 rounded-full text-gray-800 focus:outline-none focus:ring-4 focus:ring-white/50"
-                            style={{ fontFamily: 'var(--font-cormorant), serif' }}
-                        />
-                        <button
-                            className="w-full sm:w-auto bg-white text-[#D23669] font-bold py-4 px-8 rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg"
-                            style={{ fontFamily: 'var(--font-playfair), serif', letterSpacing: '0.05em' }}
-                        >
-                            SUBSCRIBE
-                        </button>
-                    </div>
+                    <FooterForm />
 
                     {/* Footer Links */}
-                    <div className="mt-12 pt-8 border-t border-white/30">
+                    <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-white/30">
                         <p className="text-white/80 text-sm" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
                             © 2026 Clutch. All rights reserved.
                         </p>
