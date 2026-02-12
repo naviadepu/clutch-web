@@ -6,42 +6,34 @@ async function saveToGoogleSheets(email: string) {
         throw new Error('GOOGLE_SCRIPT_URL is not configured');
     }
 
-    // Google Apps Script requires no-cors mode and works best with text/plain
-    const res = await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify({ email }),
-        redirect: 'follow',
-    });
+    // Use GET with query param - avoids 401 auth issues with Apps Script POST
+    const url = new URL(GOOGLE_SCRIPT_URL);
+    url.searchParams.set('email', email);
 
-    // Google Apps Script redirects to a response page, status may vary
-    // If we get here without throwing, the request was sent
-    if (!res.ok && res.status !== 302 && res.status !== 301) {
+    const res = await fetch(url.toString(), { redirect: 'follow' });
+
+    if (!res.ok) {
         throw new Error(`Google Script responded with status: ${res.status}`);
     }
 }
 
 async function saveToFile(email: string) {
-    // Only works in local dev - serverless environments have read-only filesystems
+    const { promises: fs } = await import('fs');
+    const path = await import('path');
+    const filePath = path.join(process.cwd(), 'subscribers.json');
+
+    let subscribers: { email: string; timestamp: string }[] = [];
     try {
-        const { promises: fs } = await import('fs');
-        const path = await import('path');
-        const filePath = path.join(process.cwd(), 'subscribers.json');
-
-        let subscribers: { email: string; timestamp: string }[] = [];
-        try {
-            const data = await fs.readFile(filePath, 'utf-8');
-            subscribers = JSON.parse(data);
-        } catch {
-            // File doesn't exist yet
-        }
-
-        if (subscribers.some((s) => s.email === email)) return;
-
-        subscribers.push({ email, timestamp: new Date().toISOString() });
-        await fs.writeFile(filePath, JSON.stringify(subscribers, null, 2));
+        const data = await fs.readFile(filePath, 'utf-8');
+        subscribers = JSON.parse(data);
     } catch {
-        // Silently fail in production (read-only filesystem)
+        // File doesn't exist yet
     }
+
+    if (subscribers.some((s) => s.email === email)) return;
+
+    subscribers.push({ email, timestamp: new Date().toISOString() });
+    await fs.writeFile(filePath, JSON.stringify(subscribers, null, 2));
 }
 
 export async function POST(request: Request) {
@@ -57,15 +49,27 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
         }
 
-        // Try Google Sheets first (works in production)
+        let saved = false;
+
+        // Try Google Sheets (works in production + local)
         try {
             await saveToGoogleSheets(email);
+            saved = true;
         } catch (err) {
             console.warn('Google Sheets save failed:', err);
         }
 
-        // Also save locally (works in dev, silently fails in production)
-        await saveToFile(email);
+        // Try local file (works in local dev only)
+        try {
+            await saveToFile(email);
+            saved = true;
+        } catch {
+            // Read-only filesystem in production - expected
+        }
+
+        if (!saved) {
+            return NextResponse.json({ error: 'Failed to save email' }, { status: 500 });
+        }
 
         return NextResponse.json({ success: true });
     } catch (error) {
