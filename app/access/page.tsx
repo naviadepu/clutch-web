@@ -30,11 +30,11 @@ export default function AccessPage() {
     };
 
     return (
-        <main className="min-h-screen bg-gingham flex items-center justify-center px-4 sm:px-6 py-8">
-            <div className="max-w-[90vw] sm:max-w-md w-full">
+        <main className="min-h-[100dvh] bg-gingham flex items-center justify-center px-4 sm:px-6 py-8 pb-[env(safe-area-inset-bottom,8px)]">
+            <div className="w-full max-w-md mx-auto">
                 <Link
                     href="/"
-                    className="inline-block mb-6 sm:mb-8 text-[#D23669] hover:underline text-sm"
+                    className="inline-flex items-center gap-1 mb-6 sm:mb-8 text-[#D23669] active:opacity-70 hover:underline text-sm py-2"
                     style={{ fontFamily: 'var(--font-cormorant), serif' }}
                 >
                     &larr; Back to home
@@ -115,13 +115,15 @@ export default function AccessPage() {
                                     placeholder="your@email.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-[#D23669] rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D23669]/50 text-sm sm:text-base"
+                                    autoComplete="email"
+                                    autoCapitalize="off"
+                                    className="w-full px-4 py-3 sm:py-3 border-2 border-[#D23669] rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D23669]/50 text-base"
                                     style={{ fontFamily: 'var(--font-cormorant), serif' }}
                                 />
                                 <button
                                     type="submit"
                                     disabled={status === 'loading'}
-                                    className="w-full bg-[#D23669] text-white py-2.5 sm:py-3 rounded-lg font-bold hover:bg-[#b82d5a] transition-colors disabled:opacity-50 text-sm sm:text-base"
+                                    className="w-full bg-[#D23669] text-white py-3 sm:py-3 rounded-lg font-bold hover:bg-[#b82d5a] active:bg-[#a0264d] transition-colors disabled:opacity-50 text-base"
                                     style={{ fontFamily: 'monospace', letterSpacing: '0.08em' }}
                                 >
                                     {status === 'loading' ? 'submitting...' : 'sign me up'}
