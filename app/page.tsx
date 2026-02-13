@@ -116,7 +116,7 @@ function FeaturesSection() {
   }, []);
 
   return (
-      <section ref={sectionRef} className="relative min-h-screen flex flex-col items-center justify-center py-20 px-8">
+      <section id="about" ref={sectionRef} className="relative min-h-screen flex flex-col items-center justify-center py-20 px-8">
         <h2
             className="text-5xl md:text-6xl font-bold text-center text-[#D23669] mb-16"
             style={{ fontFamily: 'var(--font-playfair), serif' }}
@@ -372,7 +372,7 @@ export default function Home() {
                                     A women-focused menstrual product sharing and accessibility app for college campuses.
                                 </p>
 {/* CTA Button with Animation - Retro Pixel Art Style (Responsive) */}
-<div className="mt-4 animate-fadeInUp" style={{ animationDelay: '0.8s' }}>
+<div id="access" className="mt-4 animate-fadeInUp" style={{ animationDelay: '0.8s' }}>
   <div className="relative inline-block">
     {/* Pixel Art Window Frame */}
     <div

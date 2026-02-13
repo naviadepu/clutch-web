@@ -40,13 +40,19 @@ export default function Navbar() {
               <div className="py-2">
                 <button
                   className={`${scriptFont.className} w-full text-left px-6 py-3 text-3xl text-[#D23669] hover:bg-pink-50 transition-colors`}
-                  onClick={() => setMenuOpen(false)}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                 >
                   about
                 </button>
                 <button
                   className={`${scriptFont.className} w-full text-left px-6 py-3 text-3xl text-[#D23669] hover:bg-pink-50 transition-colors`}
-                  onClick={() => setMenuOpen(false)}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    document.getElementById('access')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                 >
                   access
                 </button>
