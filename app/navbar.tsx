@@ -15,11 +15,8 @@ export default function Navbar() {
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    let lastScrollY = window.scrollY;
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setHidden(currentScrollY > 50 && currentScrollY > lastScrollY);
-      lastScrollY = currentScrollY;
+      setHidden(window.scrollY > 100);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
