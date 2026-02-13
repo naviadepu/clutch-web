@@ -41,8 +41,8 @@ function FooterForm() {
     return (
       <div className="text-center px-2">
         <div className="inline-flex items-center gap-2 bg-white/20 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-full">
-          <span className="text-xl sm:text-2xl">♥</span>
-          <span style={{ fontFamily: 'var(--font-cormorant), serif' }} className="text-base sm:text-lg">
+          <span className="text-2xl sm:text-3xl">♥</span>
+          <span style={{ fontFamily: 'var(--font-cormorant), serif' }} className="text-lg sm:text-2xl">
             Thanks for signing up! We can&apos;t wait to have you.
           </span>
         </div>
