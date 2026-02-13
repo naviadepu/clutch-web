@@ -28,7 +28,7 @@ export default function Navbar() {
             src="/images/star.png"
             alt="Menu"
             onClick={() => setMenuOpen(!menuOpen)}
-            className="w-16 h-16 sm:w-28 sm:h-28 hover:opacity-80 transition-opacity cursor-pointer"
+            className="w-28 h-28 hover:opacity-80 transition-opacity cursor-pointer"
           />
 
           {/* Dropdown Menu */}
@@ -67,7 +67,7 @@ export default function Navbar() {
         </h1>
         {/* Mobile/tablet: only visible on star hover/tap (below 1024px) */}
         <h1
-          className={`${scriptFont.className} text-3xl text-[#D23669] transition-all duration-300 cursor-pointer lg:hidden ${
+          className={`${scriptFont.className} text-6xl text-[#D23669] transition-all duration-300 cursor-pointer lg:hidden ${
             showName ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none'
           }`}
         >
