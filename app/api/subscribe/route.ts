@@ -32,7 +32,6 @@ async function sendConfirmationEmail(email: string) {
         subject: 'Welcome to Clutch — You\'re on the list!',
         html: `
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 24px;">
-                <img src="https://clutch-care.vercel.app/images/star.png" alt="Clutch" width="60" height="60" style="display: block; margin: 0 0 16px;" />
                 <h1 style="color: #D23669; font-size: 28px; margin: 0 0 16px;">Clutch</h1>
                 <p style="color: #333; font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
                     Thanks for signing up! You're on the early access list.
