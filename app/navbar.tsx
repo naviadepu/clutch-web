@@ -16,7 +16,7 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 w-full pt-4 sm:pt-12 pb-4 sm:pb-8 px-4 sm:px-8 z-50 flex items-center pointer-events-none">
       {/* Star Icon (Menu Toggle) and Clutch - Far Left */}
-      <div className="pointer-events-auto absolute -left-2 sm:-left-4 z-50 flex items-center gap-1 sm:gap-2">
+      <div className="pointer-events-auto absolute -left-2 sm:-left-4 top-8 sm:top-0 z-50 flex items-center gap-1 sm:gap-2">
         <div
           className="relative"
           onMouseEnter={() => setShowName(true)}
