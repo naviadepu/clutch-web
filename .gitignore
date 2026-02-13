@@ -34,7 +34,7 @@ yarn-error.log*
 .env*
 
 # subscriber data
-subscribes.json
+subscribers.json
 
 # vercel
 .vercel
