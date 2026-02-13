@@ -28,7 +28,7 @@ export default function Navbar() {
             src="/images/star.png"
             alt="Menu"
             onClick={() => setMenuOpen(!menuOpen)}
-            className="w-28 h-28 hover:opacity-80 transition-opacity cursor-pointer"
+            className="w-36 h-36 sm:w-28 sm:h-28 hover:opacity-80 transition-opacity cursor-pointer"
           />
 
           {/* Dropdown Menu */}
