@@ -58,7 +58,7 @@ function FooterForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Enter your email"
-        className="w-full sm:flex-1 px-4 sm:px-6 py-3 sm:py-4 rounded-full text-gray-800 focus:outline-none focus:ring-4 focus:ring-white/50 text-sm sm:text-base"
+        className="w-full sm:flex-1 px-4 sm:px-6 py-3 sm:py-4 rounded-full text-gray-800 focus:outline-none focus:ring-4 focus:ring-white/50 text-base sm:text-lg"
         style={{ fontFamily: 'var(--font-cormorant), serif' }}
         disabled={status === 'loading'}
       />
