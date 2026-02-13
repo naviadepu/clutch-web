@@ -1,7 +1,7 @@
 'use client';
 
 import { Pinyon_Script } from 'next/font/google';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const scriptFont = Pinyon_Script({
   weight: '400',
@@ -12,9 +12,21 @@ const scriptFont = Pinyon_Script({
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showName, setShowName] = useState(false);
+  const [hidden, setHidden] = useState(false);
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setHidden(currentScrollY > 50 && currentScrollY > lastScrollY);
+      lastScrollY = currentScrollY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <nav className="fixed top-0 left-0 w-full pt-4 sm:pt-12 pb-4 sm:pb-8 px-4 sm:px-8 z-50 flex items-center pointer-events-none">
+    <nav className={`fixed top-0 left-0 w-full pt-4 sm:pt-12 pb-4 sm:pb-8 px-4 sm:px-8 z-50 flex items-center pointer-events-none transition-all duration-300 ${hidden ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}>
       {/* Star Icon (Menu Toggle) and Clutch - Far Left */}
       <div className="pointer-events-auto absolute -left-2 sm:-left-4 top-16 sm:top-0 z-50 flex items-center gap-1 sm:gap-2">
         <div
