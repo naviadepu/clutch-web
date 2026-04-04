@@ -39,18 +39,18 @@ async function sendConfirmationEmail(email: string) {
     await transporter.sendMail({
         from: `Clutch <${fromEmail}>`,
         to: email,
-        subject: 'welcome to clutch, you\'re on the list! ',
+        subject: "you're in! welcome to clutch",
         html: `
-            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 24px;">
-                <h1 style="color: #D23669; font-size: 28px; margin: 0 0 16px;">Clutch</h1>
-                <p style="color: #333; font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
-                    Thanks for signing up! You're on the early access list.
+            <div style="font-family: Georgia, 'Times New Roman', serif; max-width: 480px; margin: 0 auto; padding: 40px 24px;">
+                <h1 style="color: #D23669; font-size: 28px; margin: 0 0 20px;">&#128206; clutch</h1>
+                <p style="color: #333; font-size: 16px; line-height: 1.7; margin: 0 0 14px;">
+                    thanks for joining the list!
                 </p>
-                <p style="color: #333; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
-                    We'll reach out as soon as we're ready for you.
+                <p style="color: #333; font-size: 16px; line-height: 1.7; margin: 0 0 24px;">
+                    you'll be one of our first beta testers when clutch launches. we'll keep you posted.
                 </p>
                 <div style="border-top: 2px solid #D23669; padding-top: 16px;">
-                    <p style="color: #999; font-size: 13px; margin: 0;">The Clutch Team</p>
+                    <p style="color: #999; font-size: 13px; margin: 0;">the clutch team</p>
                 </div>
             </div>
         `,
