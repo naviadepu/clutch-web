@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
 async function saveToGoogleSheets(email: string) {
     const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
@@ -19,17 +19,27 @@ async function saveToGoogleSheets(email: string) {
 }
 
 async function sendConfirmationEmail(email: string) {
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) {
-        console.warn('RESEND_API_KEY not configured — skipping confirmation email');
+    const apiKey = process.env.SENDGRID_API_KEY;
+    const fromEmail = process.env.SENDGRID_FROM_EMAIL;
+
+    if (!apiKey || !fromEmail) {
+        console.warn('SendGrid not configured — skipping confirmation email');
         return;
     }
 
-    const resend = new Resend(apiKey);
-    await resend.emails.send({
-        from: 'Clutch <onboarding@resend.dev>',
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.sendgrid.net',
+        port: 587,
+        auth: {
+            user: 'apikey',
+            pass: apiKey,
+        },
+    });
+
+    await transporter.sendMail({
+        from: `Clutch <${fromEmail}>`,
         to: email,
-        subject: 'Welcome to Clutch — You\'re on the list!',
+        subject: 'welcome to clutch, you\'re on the list! ',
         html: `
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 24px;">
                 <h1 style="color: #D23669; font-size: 28px; margin: 0 0 16px;">Clutch</h1>
