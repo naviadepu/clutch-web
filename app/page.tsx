@@ -216,13 +216,6 @@ function FeaturesSection() {
             <div className="mx-auto flex max-w-md justify-center py-4">
               <PhoneAnimation activeFeature={hoveredFeature} />
             </div>
-
-            <p
-              className="text-center text-[#D23669] text-base mt-4 font-semibold"
-              style={{ fontFamily: 'var(--font-cormorant), serif' }}
-            >
-              Hover over the cards above to preview each screen
-            </p>
           </div>
         </div>
       </section>
