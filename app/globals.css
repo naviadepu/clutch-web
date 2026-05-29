@@ -13,6 +13,14 @@
   --font-serif: var(--font-playfair);
   --font-script: var(--font-dancing);
   --font-romantic: var(--font-cormorant);
+  --color-clutch-paper: #f6efe3;
+  --color-clutch-paper-deep: #efe5d2;
+  --color-clutch-softpink: #f4c9d6;
+  --color-clutch-bubblegum: #eb6e9e;
+  --color-clutch-hot: #d6336c;
+  --color-clutch-chocolate: #4a2a1a;
+  --color-clutch-ink: #1b1b1b;
+  --color-clutch-dusty: #c9d6e2;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -130,6 +138,66 @@
 
   .animate-testimonialScroll {
     animation: testimonialScroll 25s linear infinite;
+  }
+
+  .font-pinyon {
+    font-family: var(--font-pinyon), cursive;
+  }
+
+  .font-phone-display {
+    font-family: var(--font-playfair), Georgia, serif;
+  }
+
+  .font-phone-body {
+    font-family: var(--font-pt-serif), Georgia, serif;
+  }
+
+  .halftone {
+    background-image: radial-gradient(#f4c9d6 22%, transparent 23%);
+    background-size: 6px 6px;
+  }
+
+  .halftone-pink {
+    background-image: radial-gradient(rgba(214, 51, 108, 0.7) 22%, transparent 23%);
+    background-size: 5px 5px;
+  }
+
+  .shadow-tape {
+    box-shadow: 0 1px 2px rgba(27, 27, 27, 0.12);
+  }
+
+  @keyframes heart-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.08);
+    }
+  }
+
+  .heart-pulse {
+    transform-origin: center;
+    animation: heart-pulse 1s ease-in-out infinite;
+  }
+
+  @keyframes sparkle-spin {
+    0% {
+      transform: rotate(0deg);
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: rotate(360deg);
+      opacity: 0.4;
+    }
+  }
+
+  .sparkle-spin {
+    transform-origin: center;
+    animation: sparkle-spin 2s linear infinite;
   }
 }
 
