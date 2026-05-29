@@ -5,6 +5,7 @@ import Navbar from "./navbar";
 import { useEffect, useRef, useState } from 'react';
 import { Pinyon_Script } from 'next/font/google';
 import BagAnimation from "./BagAnimation";
+import PhoneAnimation, { type FeatureId } from "./components/phone/PhoneAnimation";
 
 const scriptFont = Pinyon_Script({
   weight: '400',
@@ -82,7 +83,7 @@ function FooterForm() {
 function FeaturesSection() {
   const [isOpen, setIsOpen] = useState(false);
   const [showCards, setShowCards] = useState(false);
-  const [hoveredFeature, setHoveredFeature] = useState<string | null>(null);
+  const [hoveredFeature, setHoveredFeature] = useState<FeatureId | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -148,180 +149,73 @@ function FeaturesSection() {
 
             {/* Pink Frame Cards Sliding Out */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
-              {/* Card 1 - Request/Give Item */}
+              {/* Card 1 - Home Feed */}
               <div
-                  onMouseEnter={() => setHoveredFeature('give-request')}
+                  onMouseEnter={() => setHoveredFeature('home')}
                   onMouseLeave={() => setHoveredFeature(null)}
                   className={`relative transition-all duration-700 ease-out cursor-pointer ${
                       showCards ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
-                  } ${hoveredFeature === 'give-request' ? 'scale-105' : ''}`}
+                  } ${hoveredFeature === 'home' ? 'scale-105' : ''}`}
                   style={{ transitionDelay: showCards ? '400ms' : '0ms' }}
               >
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 text-3xl">🎀</div>
                 <div className="border-4 border-[#D23669] rounded-lg bg-white p-6 hover:shadow-xl transition-all duration-300 min-h-[180px] flex flex-col justify-center">
                   <h3 className={`${scriptFont.className} text-[#D23669] text-xl md:text-2xl font-bold text-center mb-2`}>
-                    Request/Give Item
+                    Home Feed
                   </h3>
                   <p className="text-gray-700 text-xs md:text-sm text-center leading-relaxed" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                    Give and request through a supportive network of verified students.
+                    Your cycle phase, mood, and a feed of outfits, recipes, and reads that match where you are.
                   </p>
                 </div>
               </div>
 
-              {/* Card 2 - Map */}
+              {/* Card 2 - Community */}
               <div
-                  onMouseEnter={() => setHoveredFeature('map')}
+                  onMouseEnter={() => setHoveredFeature('community')}
                   onMouseLeave={() => setHoveredFeature(null)}
                   className={`relative transition-all duration-700 ease-out cursor-pointer ${
                       showCards ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
-                  } ${hoveredFeature === 'map' ? 'scale-105' : ''}`}
+                  } ${hoveredFeature === 'community' ? 'scale-105' : ''}`}
                   style={{ transitionDelay: showCards ? '500ms' : '0ms' }}
-              >
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 text-3xl">🎀</div>
-                <div className="border-4 border-[#D23669] rounded-lg bg-white p-6 hover:shadow-xl transition-all duration-300 min-h-[180px] flex flex-col justify-center">
-                  <h3 className={`${scriptFont.className} text-[#D23669] text-xl md:text-2xl font-bold text-center mb-2`}>
-                    Map
-                  </h3>
-                  <p className="text-gray-700 text-xs md:text-sm text-center leading-relaxed" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                    Navigate your campus with ease. Find products nearby in real-time.
-                  </p>
-                </div>
-              </div>
-
-              {/* Card 3 - Community */}
-              <div
-                  onMouseEnter={() => setHoveredFeature('community-tab')}
-                  onMouseLeave={() => setHoveredFeature(null)}
-                  className={`relative transition-all duration-700 ease-out cursor-pointer ${
-                      showCards ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
-                  } ${hoveredFeature === 'community-tab' ? 'scale-105' : ''}`}
-                  style={{ transitionDelay: showCards ? '600ms' : '0ms' }}
-              >
+                  >
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 text-3xl">🎀</div>
                 <div className="border-4 border-[#D23669] rounded-lg bg-white p-6 hover:shadow-xl transition-all duration-300 min-h-[180px] flex flex-col justify-center">
                   <h3 className={`${scriptFont.className} text-[#D23669] text-xl md:text-2xl font-bold text-center mb-2`}>
                     Community
                   </h3>
                   <p className="text-gray-700 text-xs md:text-sm text-center leading-relaxed" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                    Connect with verified students and join a supportive campus community.
+                    Friends, photos, plans, and check-ins — your group chat finally has a home.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 3 - The Share */}
+              <div
+                  onMouseEnter={() => setHoveredFeature('share')}
+                  onMouseLeave={() => setHoveredFeature(null)}
+                  className={`relative transition-all duration-700 ease-out cursor-pointer ${
+                      showCards ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
+                  } ${hoveredFeature === 'share' ? 'scale-105' : ''}`}
+                  style={{ transitionDelay: showCards ? '600ms' : '0ms' }}
+              >
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 text-3xl">🎀</div>
+                <div className="border-4 border-[#D23669] rounded-lg bg-white p-6 hover:shadow-xl transition-all duration-300 min-h-[180px] flex flex-col justify-center">
+                  <h3 className={`${scriptFont.className} text-[#D23669] text-xl md:text-2xl font-bold text-center mb-2`}>
+                    The Share
+                  </h3>
+                  <p className="text-gray-700 text-xs md:text-sm text-center leading-relaxed" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
+                    Ask for a pad, help another girl out — the heart of clutch, now with more around it.
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Large App Mockup at Bottom */}
-          <div className="relative border-4 border-[#D23669] rounded-2xl bg-white p-8 overflow-hidden">
-            {/* Phone Mockup Container */}
-            <div className="bg-[#D23669] rounded-3xl p-4 mx-auto max-w-[400px] shadow-2xl">
-              <div className="bg-white rounded-2xl overflow-hidden border-2 border-[#D23669]">
-                {/* Full App Screen with Zoom Transitions */}
-                <div className="bg-gradient-to-b from-pink-50 to-white h-[600px] relative transition-all duration-500 ease-in-out"
-                     style={{
-                       transform: hoveredFeature === 'give-request' ? 'scale(3) translateX(0%) translateY(15%)' :
-                                  hoveredFeature === 'map' ? 'scale(3) translateX(0%) translateY(-30%)' :
-                                  hoveredFeature === 'community-tab' ? 'scale(3) translateX(-25%) translateY(-30%)' : 'scale(1)',
-                       transformOrigin: 'center center'
-                     }}>
-                  {/* Header - Security Feature */}
-                  <div className="p-4 border-b-2 border-[#D23669]/20 bg-white">
-                    <h4 className="text-[#D23669] font-bold text-lg" style={{ fontFamily: 'var(--font-playfair), serif' }}>
-                      Welcome, User
-                    </h4>
-                    <p className="text-gray-600 text-sm" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                      Atlanta Campus
-                    </p>
-                  </div>
-
-                  {/* Give/Request Buttons - Community Feature */}
-                  <div className="p-4">
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="bg-[#D23669] text-white text-center py-5 rounded-2xl font-bold shadow-md hover:shadow-lg transition-shadow"
-                           style={{ fontFamily: 'var(--font-playfair), serif' }}>
-                        🎁 Give
-                      </div>
-                      <div className="bg-[#D23669] text-white text-center py-5 rounded-2xl font-bold shadow-md hover:shadow-lg transition-shadow"
-                           style={{ fontFamily: 'var(--font-playfair), serif' }}>
-                        + Request
-                      </div>
-                    </div>
-
-                    {/* Recent Activity */}
-                    <div className="bg-gingham rounded-2xl p-4 mb-6 border-2 border-[#D23669]/30">
-                      <p className="text-[#D23669] text-sm mb-3 font-bold" style={{ fontFamily: 'var(--font-playfair), serif' }}>
-                        Recent Activity
-                      </p>
-                      <div className="space-y-2">
-                        <div className="bg-white p-3 rounded-xl text-sm text-gray-700 border border-[#D23669]/20"
-                             style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                          Requested: Period Products
-                        </div>
-                        <div className="bg-white p-3 rounded-xl text-sm text-gray-700 border border-[#D23669]/20"
-                             style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                          Donated: All Items
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Community Section */}
-                  <div className="px-4 pb-20">
-                    <p className="text-[#D23669] text-sm mb-3 font-bold" style={{ fontFamily: 'var(--font-playfair), serif' }}>
-                      Community
-                    </p>
-                    <div className="space-y-2">
-                      <div className="bg-pink-50 p-3 rounded-xl text-sm text-gray-700 border border-[#D23669]/20 flex items-center gap-2"
-                           style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                        <span className="text-lg">👤</span>
-                        <div>
-                          <p className="font-bold text-[#D23669]" style={{ fontFamily: 'var(--font-playfair), serif' }}>Sarah M.</p>
-                          <p className="text-xs text-gray-500">Shared pads near Library</p>
-                        </div>
-                      </div>
-                      <div className="bg-pink-50 p-3 rounded-xl text-sm text-gray-700 border border-[#D23669]/20 flex items-center gap-2"
-                           style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                        <span className="text-lg">👤</span>
-                        <div>
-                          <p className="font-bold text-[#D23669]" style={{ fontFamily: 'var(--font-playfair), serif' }}>Emily R.</p>
-                          <p className="text-xs text-gray-500">Donated tampons at Dorm B</p>
-                        </div>
-                      </div>
-                      <div className="bg-pink-50 p-3 rounded-xl text-sm text-gray-700 border border-[#D23669]/20 flex items-center gap-2"
-                           style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                        <span className="text-lg">👤</span>
-                        <div>
-                          <p className="font-bold text-[#D23669]" style={{ fontFamily: 'var(--font-playfair), serif' }}>Priya K.</p>
-                          <p className="text-xs text-gray-500">Helped 3 requests today</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bottom Navigation */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-white border-t-2 border-[#D23669]/20">
-                    <div className="grid grid-cols-3 gap-2 p-3">
-                      <div className={`flex flex-col items-center justify-center py-2 rounded-xl ${hoveredFeature === 'give-request' ? 'bg-[#D23669] shadow-md' : 'bg-pink-50 border border-[#D23669]/20'}`}>
-                        <span className="text-xl mb-1">🎁</span>
-                        <span className={`text-xs ${hoveredFeature === 'give-request' ? 'text-white font-bold' : 'text-gray-600'}`} style={{ fontFamily: hoveredFeature === 'give-request' ? 'var(--font-playfair), serif' : 'var(--font-cormorant), serif' }}>Give/Request</span>
-                      </div>
-                      <div className={`flex flex-col items-center justify-center py-2 rounded-xl ${hoveredFeature === 'map' ? 'bg-[#D23669] shadow-md' : 'bg-pink-50 border border-[#D23669]/20'}`}>
-                        <span className="text-xl mb-1">🗺️</span>
-                        <span className={`text-xs ${hoveredFeature === 'map' ? 'text-white font-bold' : 'text-gray-600'}`} style={{ fontFamily: hoveredFeature === 'map' ? 'var(--font-playfair), serif' : 'var(--font-cormorant), serif' }}>Map</span>
-                      </div>
-                      <div className={`flex flex-col items-center justify-center py-2 rounded-xl ${hoveredFeature === 'community-tab' ? 'bg-[#D23669] shadow-md' : 'bg-pink-50 border border-[#D23669]/20'}`}>
-                        <span className="text-xl mb-1">👥</span>
-                        <span className={`text-xs ${hoveredFeature === 'community-tab' ? 'text-white font-bold' : 'text-gray-600'}`} style={{ fontFamily: hoveredFeature === 'community-tab' ? 'var(--font-playfair), serif' : 'var(--font-cormorant), serif' }}>Community</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          {/* Newsletter phone animation */}
+          <div className="relative rounded-2xl border-4 border-[#D23669] bg-white p-8 md:p-12 overflow-hidden">
+            <div className="mx-auto flex max-w-md justify-center py-4">
+              <PhoneAnimation activeFeature={hoveredFeature} />
             </div>
-
-            {/* Instruction Text */}
-            <p className="text-center text-[#D23669] text-base mt-6 font-semibold" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-              Hover over the cards above to see each feature in action
-            </p>
           </div>
         </div>
       </section>
