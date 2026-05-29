@@ -212,7 +212,7 @@ function FeaturesSection() {
           </div>
 
           {/* Newsletter phone animation */}
-          <div className="relative rounded-2xl border-4 border-[#D23669] bg-clutch-paper p-8 md:p-12 overflow-hidden">
+          <div className="relative rounded-2xl border-4 border-[#D23669] bg-white p-8 md:p-12 overflow-hidden">
             <div className="mx-auto flex max-w-md justify-center py-4">
               <PhoneAnimation activeFeature={hoveredFeature} />
             </div>

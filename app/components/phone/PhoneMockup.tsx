@@ -28,7 +28,7 @@ export default function PhoneMockup({
         }}
       />
       <div
-        className="relative rounded-[32px] border-2 border-clutch-ink bg-clutch-paper p-2.5 shadow-[4px_5px_0_rgba(27,27,27,0.18)]"
+        className="relative rounded-[32px] border-2 border-[#D23669] bg-retro-light-pink p-2.5 shadow-[4px_5px_0_rgba(210,54,105,0.2)]"
         style={{ width }}
       >
         <span
@@ -43,7 +43,7 @@ export default function PhoneMockup({
           className="mx-auto mb-1.5 h-4 w-16 rounded-b-xl border-x border-b border-clutch-ink bg-clutch-ink/85"
           aria-hidden
         />
-        <div className="aspect-[9/18] overflow-hidden rounded-[22px] border border-clutch-ink/60 bg-clutch-softpink/25">
+        <div className="aspect-[9/18] overflow-hidden rounded-[22px] border border-clutch-ink/60 bg-white">
           {children ?? (
             <div className="flex h-full flex-col items-center justify-center gap-2 p-4 text-center">
               <PixelHeart size={28} />
