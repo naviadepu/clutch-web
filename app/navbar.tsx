@@ -67,6 +67,21 @@ export default function Navbar() {
           Clutch
         </h1>
       </div>
+
+      {/* Newsletter — retro pixel button (top right) */}
+      <a
+        href="https://clutch-newsletter.vercel.app"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="pointer-events-auto absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 bg-white border-2 border-[#D23669] px-3 py-2 sm:px-4 sm:py-2.5 text-[#D23669] text-[8px] sm:text-[10px] uppercase tracking-wide hover:bg-[#FFEAF5] active:translate-x-[1px] active:translate-y-[1px] transition-colors duration-100"
+        style={{
+          fontFamily: 'var(--font-press-start), monospace',
+          boxShadow: '2px 2px 0 #D23669',
+          imageRendering: 'pixelated',
+        }}
+      >
+        newsletter
+      </a>
     </nav>
   );
 }
