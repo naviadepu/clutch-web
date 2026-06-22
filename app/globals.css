@@ -21,6 +21,8 @@
   --color-clutch-chocolate: #4a2a1a;
   --color-clutch-ink: #1b1b1b;
   --color-clutch-dusty: #c9d6e2;
+  --color-clutch-cream: #fff6f0;
+  --color-clutch-mauve: #d9b8cc;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -198,6 +200,115 @@
   .sparkle-spin {
     transform-origin: center;
     animation: sparkle-spin 2s linear infinite;
+  }
+
+  /* --- the log: app surface --- */
+  .bg-clutch-cream {
+    background-color: #fff6f0;
+  }
+
+  .paper-grain {
+    background-color: #fff6f0;
+    background-image:
+      radial-gradient(rgba(214, 51, 108, 0.05) 1px, transparent 1.4px),
+      radial-gradient(rgba(74, 42, 26, 0.04) 1px, transparent 1.4px);
+    background-size: 16px 16px, 22px 22px;
+    background-position: 0 0, 8px 11px;
+  }
+
+  @keyframes sheet-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .animate-sheet-up {
+    animation: sheet-up 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes scrim-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-scrim-in {
+    animation: scrim-in 0.25s ease-out forwards;
+  }
+
+  @keyframes card-pop {
+    0% {
+      opacity: 0;
+      transform: translateY(14px) scale(0.96);
+    }
+    60% {
+      transform: translateY(-2px) scale(1.01);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .animate-card-pop {
+    animation: card-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes log-pop {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-log-pop {
+    animation: log-pop 0.35s ease-out forwards;
+  }
+
+  @keyframes shimmer-sweep {
+    0% {
+      background-position: -120% 0;
+    }
+    100% {
+      background-position: 220% 0;
+    }
+  }
+
+  .shimmer-gold {
+    background-image: linear-gradient(
+      110deg,
+      transparent 30%,
+      rgba(232, 163, 61, 0.45) 50%,
+      transparent 70%
+    );
+    background-size: 220% 100%;
+    animation: shimmer-sweep 2.6s linear infinite;
+  }
+
+  @keyframes star-spin-pop {
+    0% {
+      transform: rotate(0deg) scale(1);
+    }
+    50% {
+      transform: rotate(180deg) scale(1.12);
+    }
+    100% {
+      transform: rotate(360deg) scale(1);
+    }
+  }
+
+  .fab-star:hover {
+    animation: star-spin-pop 0.6s ease-in-out;
   }
 }
 

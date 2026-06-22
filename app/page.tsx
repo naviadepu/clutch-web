@@ -1,456 +1,160 @@
-'use client';
+"use client";
 
-import SnowyBackground from "./snowybg";
-import Navbar from "./navbar";
-import { useEffect, useRef, useState } from 'react';
-import { Pinyon_Script } from 'next/font/google';
-import BagAnimation from "./BagAnimation";
-import PhoneAnimation, { type FeatureId } from "./components/phone/PhoneAnimation";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { hydrate, useClutch, dismissSavePrompt } from "./lib/store";
+import { computePattern } from "./lib/patterns";
+import CycleHeader from "./components/app/CycleHeader";
+import LogFeed from "./components/app/LogFeed";
+import PatternCard from "./components/app/PatternCard";
+import LogSheet from "./components/app/LogSheet";
+import { FourPointStar, PixelHeart } from "./components/phone/decorations";
 
-const scriptFont = Pinyon_Script({
-  weight: '400',
-  subsets: ['latin'],
-});
+export default function Home() {
+  const [mounted, setMounted] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const state = useClutch();
 
-function FooterForm() {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  // hydrate guest data after mount — keeps SSR + first paint stable.
+  useEffect(() => {
+    hydrate();
+    setMounted(true);
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus('loading');
-
-    try {
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-
-      if (res.ok) {
-        setStatus('success');
-        setEmail('');
-      } else {
-        setStatus('error');
-      }
-    } catch {
-      setStatus('error');
-    }
-  };
-
-  if (status === 'success') {
+  if (!mounted) {
     return (
-      <div className="text-center px-2">
-        <div className="inline-flex items-center gap-2 bg-white/20 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-full">
-          <span className="text-2xl sm:text-3xl">♥</span>
-          <span style={{ fontFamily: 'var(--font-cormorant), serif' }} className="text-lg sm:text-2xl">
-            Thanks for signing up! We can&apos;t wait to have you.
-          </span>
-        </div>
-      </div>
+      <main className="paper-grain grid min-h-[100dvh] place-items-center">
+        <p className="font-pinyon text-clutch-hot" style={{ fontSize: 48 }}>
+          clutch
+        </p>
+      </main>
     );
   }
 
-  return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center max-w-[90vw] sm:max-w-md mx-auto px-2 sm:px-0">
-      <input
-        type="email"
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Enter your email"
-        className="w-full sm:flex-1 px-4 sm:px-6 py-3 sm:py-4 rounded-full text-gray-800 focus:outline-none focus:ring-4 focus:ring-white/50 text-lg sm:text-xl font-semibold"
-        style={{ fontFamily: 'var(--font-cormorant), serif' }}
-        disabled={status === 'loading'}
-      />
-      <button
-        type="submit"
-        disabled={status === 'loading'}
-        className="w-full sm:w-auto bg-white text-[#D23669] font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 text-sm sm:text-base"
-        style={{ fontFamily: 'var(--font-playfair), serif', letterSpacing: '0.05em' }}
-      >
-        {status === 'loading' ? 'SENDING...' : 'SUBSCRIBE'}
-      </button>
-      {status === 'error' && (
-        <p className="w-full text-white/90 text-sm text-center mt-2" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-          Something went wrong. Please try again.
-        </p>
-      )}
-    </form>
-  );
-}
-
-function FeaturesSection() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [showCards, setShowCards] = useState(false);
-  const [hoveredFeature, setHoveredFeature] = useState<FeatureId | null>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              // Wait 1 second then open the envelope
-              setTimeout(() => {
-                setIsOpen(true);
-                // Show cards 500ms after envelope opens
-                setTimeout(() => {
-                  setShowCards(true);
-                }, 500);
-              }, 1000);
-            }
-          });
-        },
-        { threshold: 0.3 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
+  const pattern = computePattern(state);
+  const showSavePrompt =
+    state.logs.length >= 2 && !state.savePromptDismissed;
 
   return (
-      <section id="about" ref={sectionRef} className="relative min-h-screen flex flex-col items-center justify-center py-20 px-8">
-        <h2
-            className="text-5xl md:text-6xl font-bold text-center text-[#D23669] mb-16"
-            style={{ fontFamily: 'var(--font-playfair), serif' }}
-        >
-          Why Choose Clutch?
-        </h2>
-
-        <div className="max-w-6xl w-full">
-          {/* Envelope + Feature Cards Section */}
-          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 mb-16">
-            {/* Envelope Container */}
-            <div className="relative w-[200px] h-[200px] md:w-[300px] md:h-[300px] flex items-center justify-center shrink-0">
-              {/* Closed Envelope */}
-              <img
-                  src="/images/closedenv.png"
-                  alt="Closed envelope"
-                  className="absolute w-[180%] h-auto object-contain transition-opacity duration-[850ms] ease-in-out"
-                  style={{ opacity: isOpen ? 0 : 1, transform: 'rotate(90deg)' }}
-              />
-
-              {/* Open Envelope */}
-              <img
-                  src="/images/openenv.png"
-                  alt="Open envelope"
-                  className="absolute w-[180%] h-auto object-contain transition-opacity duration-[850ms] ease-in-out"
-                  style={{ opacity: isOpen ? 1 : 0, transform: 'rotate(90deg)' }}
-              />
-            </div>
-
-            {/* Pink Frame Cards Sliding Out */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
-              {/* Card 1 - Home Feed */}
-              <div
-                  onMouseEnter={() => setHoveredFeature('home')}
-                  onMouseLeave={() => setHoveredFeature(null)}
-                  className={`relative transition-all duration-700 ease-out cursor-pointer ${
-                      showCards ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
-                  } ${hoveredFeature === 'home' ? 'scale-105' : ''}`}
-                  style={{ transitionDelay: showCards ? '400ms' : '0ms' }}
-              >
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 text-3xl">🎀</div>
-                <div className="border-4 border-[#D23669] rounded-lg bg-white p-6 hover:shadow-xl transition-all duration-300 min-h-[180px] flex flex-col justify-center">
-                  <h3 className={`${scriptFont.className} text-[#D23669] text-xl md:text-2xl font-bold text-center mb-2`}>
-                    Home Feed
-                  </h3>
-                  <p className="text-gray-700 text-xs md:text-sm text-center leading-relaxed" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                    Your cycle phase, mood, and a feed of outfits, recipes, and reads that match where you are.
-                  </p>
-                </div>
-              </div>
-
-              {/* Card 2 - Community */}
-              <div
-                  onMouseEnter={() => setHoveredFeature('community')}
-                  onMouseLeave={() => setHoveredFeature(null)}
-                  className={`relative transition-all duration-700 ease-out cursor-pointer ${
-                      showCards ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
-                  } ${hoveredFeature === 'community' ? 'scale-105' : ''}`}
-                  style={{ transitionDelay: showCards ? '500ms' : '0ms' }}
-                  >
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 text-3xl">🎀</div>
-                <div className="border-4 border-[#D23669] rounded-lg bg-white p-6 hover:shadow-xl transition-all duration-300 min-h-[180px] flex flex-col justify-center">
-                  <h3 className={`${scriptFont.className} text-[#D23669] text-xl md:text-2xl font-bold text-center mb-2`}>
-                    Community
-                  </h3>
-                  <p className="text-gray-700 text-xs md:text-sm text-center leading-relaxed" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                    Friends, photos, plans, and check-ins — your group chat finally has a home.
-                  </p>
-                </div>
-              </div>
-
-              {/* Card 3 - The Share */}
-              <div
-                  onMouseEnter={() => setHoveredFeature('share')}
-                  onMouseLeave={() => setHoveredFeature(null)}
-                  className={`relative transition-all duration-700 ease-out cursor-pointer ${
-                      showCards ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
-                  } ${hoveredFeature === 'share' ? 'scale-105' : ''}`}
-                  style={{ transitionDelay: showCards ? '600ms' : '0ms' }}
-              >
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 text-3xl">🎀</div>
-                <div className="border-4 border-[#D23669] rounded-lg bg-white p-6 hover:shadow-xl transition-all duration-300 min-h-[180px] flex flex-col justify-center">
-                  <h3 className={`${scriptFont.className} text-[#D23669] text-xl md:text-2xl font-bold text-center mb-2`}>
-                    The Share
-                  </h3>
-                  <p className="text-gray-700 text-xs md:text-sm text-center leading-relaxed" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                    Ask for a pad, help another girl out — the heart of clutch, now with more around it.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Newsletter phone animation */}
-          <div className="relative rounded-2xl border-4 border-[#D23669] bg-white p-8 md:p-12 overflow-hidden">
-            <div className="mx-auto flex max-w-md justify-center py-4">
-              <PhoneAnimation activeFeature={hoveredFeature} />
-            </div>
-          </div>
-        </div>
-      </section>
-  );
-}
-
-export default function Home() {
-    return (
-        <main className="relative min-h-screen">
-            {/* Background Layer */}
-            <SnowyBackground />
-
-            {/* Navbar Layer */}
-            <Navbar />
-
-            {/* Hero Section */}
-            <section className="relative min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden">
-                <div className="relative z-10 bg-gingham w-full pt-12 pb-8 md:pt-16 md:pb-10 px-8 md:px-16">
-                    <div className="max-w-6xl mx-auto">
-                        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-                            {/* Left Side - Animated Bag (fixed size so text doesn't shift) */}
-                            <div className="shrink-0 w-[400px] md:w-[480px] h-[410px] md:h-[492px] flex items-center justify-center animate-fadeInUp"
-                                 style={{ animationDelay: '0.8s' }}>
-                                <BagAnimation
-                                    className="w-full h-full hover:scale-110 transition-transform duration-500 ease-out"
-                                    speed={750}
-                                />
-                            </div>
-
-                            {/* Right Side - Stacked Text with Staggered Animations */}
-                            <div className="flex-1 text-center md:text-left">
-                                <div
-                                    className="text-[#D23669] leading-[0.9]"
-                                    style={{
-                                        fontFamily: 'var(--font-playfair), serif',
-                                        fontWeight: 700,
-                                        letterSpacing: '0.02em',
-                                    }}
-                                >
-                                    <div className="text-6xl md:text-7xl lg:text-8xl uppercase animate-fadeInUp" style={{ fontWeight: 700, animationDelay: '0.3s' }}>FEMININE</div>
-                                    <div className="text-6xl md:text-7xl lg:text-8xl uppercase animate-fadeInUp" style={{ fontWeight: 700, animationDelay: '0.4s' }}>HELP</div>
-                                    <div className="text-6xl md:text-7xl lg:text-8xl uppercase animate-fadeInUp" style={{ fontWeight: 700, animationDelay: '0.5s' }}>ON YOUR</div>
-                                    <div className="text-6xl md:text-7xl lg:text-8xl uppercase animate-fadeInUp" style={{ fontWeight: 700, animationDelay: '0.6s' }}>STANDBY!</div>
-                                </div>
-
-                                {/* Subtitle with Animation */}
-                                <p className="mt-6 text-lg md:text-xl text-gray-700 animate-fadeInUp" style={{ fontFamily: 'var(--font-cormorant), serif', animationDelay: '0.7s' }}>
-                                    A women-focused menstrual product sharing and accessibility app for college campuses.
-                                </p>
-{/* CTA Button with Animation - Retro Pixel Art Style (Responsive) */}
-<div id="access" className="mt-4 animate-fadeInUp" style={{ animationDelay: '0.8s' }}>
-  <div className="relative inline-block">
-    {/* Pixel Art Window Frame */}
-    <div
-      className="relative bg-[#FFB3D9] p-0.5 md:p-1"
-      style={{
-        boxShadow: `
-          0 0 0 1px #D23669,
-          0 0 0 2px #FFB3D9,
-          0 0 0 3px #D23669,
-          2px 2px 0 3px rgba(210, 54, 105, 0.3)
-        `,
-        imageRendering: 'pixelated'
-      }}
-    >
-      {/* Window Header */}
-      <div className="bg-[#FFD6EC] border-b border-[#D23669] md:border-b-2 px-2 py-1 md:px-3 md:py-1.5 flex items-center justify-between">
-        <div className="flex gap-0.5 md:gap-1">
-          <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-[#D23669]"></div>
-          <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-[#D23669]"></div>
-          <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-[#D23669]"></div>
-        </div>
-        <div className="flex gap-1 md:gap-1.5 text-[10px] md:text-xs">
-          <span>♥</span>
-          <span>★</span>
-          <span>♥</span>
+    <main className="paper-grain min-h-[100dvh] w-full">
+      {/* thin orientation — so a total stranger landing here gets it */}
+      <div className="border-b border-clutch-ink/10 bg-white/55 backdrop-blur-sm">
+        <div className="mx-auto flex w-full max-w-md items-center justify-between gap-2 px-4 py-2">
+          <p className="font-phone-body text-[10px] leading-tight text-clutch-chocolate/75">
+            <span className="font-phone-display text-[12px] italic text-clutch-hot">
+              clutch
+            </span>{" "}
+            · log your food + meds, we connect the dots to your cycle.
+          </p>
+          <Link
+            href="/landing"
+            className="shrink-0 font-phone-body text-[9px] uppercase tracking-[0.12em] text-clutch-hot underline-offset-2 hover:underline"
+          >
+            what&apos;s this?
+          </Link>
         </div>
       </div>
 
-      {/* Button Content */}
-      <a
-        href="/access"
-        className="block bg-[#FFEAF5] px-6 py-2.5 md:px-8 md:py-3 lg:px-10 lg:py-4 w-full border border-transparent hover:border-[#D23669] hover:bg-[#FFD6EC] transition-all duration-100 text-center"
-        style={{
-          fontFamily: 'monospace',
-          fontWeight: 'bold',
-          letterSpacing: '0.08em',
-          imageRendering: 'pixelated'
-        }}
-      >
-        <span className="text-[#D23669] text-sm md:text-base lg:text-lg" style={{ textShadow: '1px 1px 0 #FFB3D9' }}>access</span>
-      </a>
+      <div className="mx-auto w-full max-w-md px-4 pb-32 pt-5">
+        <CycleHeader cycleStartISO={state.cycleStartISO} />
 
-      {/* Pixel Corner Decorations */}
-      <div className="absolute -top-0.5 -left-0.5 w-1.5 h-1.5 md:w-2 md:h-2 bg-[#D23669]"></div>
-      <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 md:w-2 md:h-2 bg-[#D23669]"></div>
-      <div className="absolute -bottom-0.5 -left-0.5 w-1.5 h-1.5 md:w-2 md:h-2 bg-[#D23669]"></div>
-      <div className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 md:w-2 md:h-2 bg-[#D23669]"></div>
-    </div>
-  </div>
-</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+        {/* the connect — pattern card, once there's enough data */}
+        {pattern && (
+          <section className="mt-5">
+            <PatternCard
+              card={pattern}
+              saved={state.savedPatternIds.includes(pattern.id)}
+            />
+          </section>
+        )}
 
-            {/* Features Section with Envelope Animation */}
-            <FeaturesSection />
+        {/* the log */}
+        <section className="mt-6">
+          <div className="mb-2.5 flex items-baseline justify-between px-1">
+            <h2 className="font-pinyon text-clutch-hot" style={{ fontSize: 24 }}>
+              your log
+            </h2>
+            {state.logs.length > 0 && (
+              <span className="font-phone-body text-[9px] uppercase tracking-[0.14em] text-clutch-chocolate/50">
+                {state.logs.length} {state.logs.length === 1 ? "entry" : "entries"}
+              </span>
+            )}
+          </div>
 
-{/* Testimonials Section */}
-            <section className="relative py-20 bg-gingham overflow-hidden">
-                <div className="max-w-6xl mx-auto px-8">
-                    <h2
-                        className="text-5xl md:text-6xl font-bold text-center text-[#D23669] mb-16"
-                        style={{ fontFamily: 'var(--font-playfair), serif' }}
-                    >
-                        What Our Users Say
-                    </h2>
-                </div>
+          {state.logs.length === 0 ? (
+            <button
+              onClick={() => setSheetOpen(true)}
+              className="flex w-full flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-clutch-hot/50 bg-white/50 px-6 py-10 text-center transition-transform active:scale-[0.98]"
+            >
+              <FourPointStar size={26} color="#EB6E9E" className="sparkle-spin" />
+              <p className="font-phone-display text-sm italic text-clutch-ink">
+                nothing logged yet
+              </p>
+              <p className="font-phone-body text-[11px] text-clutch-chocolate/65">
+                tap the ★ to log your first meal — takes 5 seconds, no account.
+              </p>
+            </button>
+          ) : (
+            <LogFeed logs={state.logs} />
+          )}
+        </section>
 
-                {/* Scrolling testimonials */}
-                <div className="relative">
-                    <div className="flex animate-testimonialScroll hover:[animation-play-state:paused]">
-                        {[...Array(2)].map((_, dupeIdx) => (
-                            <div key={dupeIdx} className="flex shrink-0 gap-8 px-4">
-                                {/* Natasha K. - Real Testimonial */}
-                                <div className="bg-white p-8 rounded-lg shadow-lg w-[350px] shrink-0">
-                                    <div className="flex items-center mb-4">
-                                        <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                            N
-                                        </div>
-                                        <div className="ml-4">
-                                            <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Natasha K.</h4>
-                                            <p className="text-sm text-gray-600">College Student</p>
-                                        </div>
-                                    </div>
-                                    <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
-                                        &ldquo;I had to give a pad to my friend and I&apos;m really glad this app exists.&rdquo;
-                                    </p>
-                                </div>
+        {/* soft save prompt — after the dopamine, never before */}
+        {showSavePrompt && (
+          <div className="animate-card-pop mt-6 flex items-center gap-3 rounded-2xl border-2 border-clutch-hot bg-clutch-softpink/40 p-3.5">
+            <PixelHeart size={16} className="heart-pulse shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="font-phone-display text-[13px] italic text-clutch-ink">
+                loving this?
+              </p>
+              <p className="font-phone-body text-[10px] text-clutch-chocolate/70">
+                save your log so it&apos;s still here tomorrow.
+              </p>
+            </div>
+            <Link
+              href="/access"
+              className="shrink-0 rounded-full bg-clutch-hot px-3.5 py-2 font-phone-body text-[10px] uppercase tracking-[0.1em] text-white active:scale-95"
+            >
+              save →
+            </Link>
+            <button
+              onClick={dismissSavePrompt}
+              aria-label="dismiss"
+              className="shrink-0 font-phone-body text-[11px] text-clutch-chocolate/40 hover:text-clutch-hot"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
-                                {/* Sarah M. */}
-                                <div className="bg-white p-8 rounded-lg shadow-lg w-[350px] shrink-0">
-                                    <div className="flex items-center mb-4">
-                                        <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                            S
-                                        </div>
-                                        <div className="ml-4">
-                                            <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Sarah M.</h4>
-                                            <p className="text-sm text-gray-600">College Student</p>
-                                        </div>
-                                    </div>
-                                    <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
-                                        &ldquo;Clutch has been a lifesaver! I never worry about being caught unprepared anymore. The community is so supportive!&rdquo;
-                                    </p>
-                                </div>
+        {/* quiet disclaimer footer */}
+        <p className="mt-8 px-2 text-center font-phone-body text-[9px] leading-relaxed text-clutch-chocolate/45">
+          clutch surfaces patterns to help you notice — it&apos;s not a medical
+          device and doesn&apos;t diagnose. for anything that feels off, talk to a
+          doctor.
+        </p>
+      </div>
 
-                                {/* Emily K. */}
-                                <div className="bg-white p-8 rounded-lg shadow-lg w-[350px] shrink-0">
-                                    <div className="flex items-center mb-4">
-                                        <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                            E
-                                        </div>
-                                        <div className="ml-4">
-                                            <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Emily K.</h4>
-                                            <p className="text-sm text-gray-600">Graduate Student</p>
-                                        </div>
-                                    </div>
-                                    <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
-                                        &ldquo;The map feature makes it so easy to find help nearby. It&apos;s amazing how this app brings our campus community together!&rdquo;
-                                    </p>
-                                </div>
+      {/* the "+" — rose, star */}
+      {!sheetOpen && (
+        <button
+          onClick={() => setSheetOpen(true)}
+          aria-label="log food or meds"
+          className="fab-star fixed bottom-6 right-[max(1.5rem,calc(50%-13rem))] z-40 grid h-16 w-16 place-items-center rounded-full shadow-[0_8px_24px_rgba(214,51,108,0.45)] transition-transform active:scale-90"
+          style={{
+            background: "radial-gradient(circle at 35% 30%, #FF8FB4, #D6336C 75%)",
+          }}
+        >
+          <FourPointStar size={30} color="#FFFFFF" />
+          <span className="absolute bottom-1 right-1.5 font-phone-body text-[13px] font-bold text-white">
+            +
+          </span>
+        </button>
+      )}
 
-                                {/* Maya P. */}
-                                <div className="bg-white p-8 rounded-lg shadow-lg w-[350px] shrink-0">
-                                    <div className="flex items-center mb-4">
-                                        <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                            M
-                                        </div>
-                                        <div className="ml-4">
-                                            <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Maya P.</h4>
-                                            <p className="text-sm text-gray-600">Sophomore</p>
-                                        </div>
-                                    </div>
-                                    <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
-                                        &ldquo;I love how safe and private this platform is. It&apos;s empowering to help others while also having access to help when I need it.&rdquo;
-                                    </p>
-                                </div>
-
-                                {/* Lisa T. */}
-                                <div className="bg-white p-8 rounded-lg shadow-lg w-[350px] shrink-0">
-                                    <div className="flex items-center mb-4">
-                                        <div className="w-12 h-12 bg-[#D23669] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                            L
-                                        </div>
-                                        <div className="ml-4">
-                                            <h4 className="font-bold text-gray-800" style={{ fontFamily: 'var(--font-playfair), serif' }}>Lisa T.</h4>
-                                            <p className="text-sm text-gray-600">Junior</p>
-                                        </div>
-                                    </div>
-                                    <p className="text-gray-700 italic" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: '1.1rem' }}>
-                                        &ldquo;Clutch has completely changed how I navigate emergencies on campus. The community support is incredible!&rdquo;
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-{/* Footer with Email CTA */}
-            <footer className="relative py-10 sm:py-16 px-4 sm:px-8 bg-[#D23669]">
-                <div className="max-w-4xl mx-auto text-center">
-                    <h2
-                        className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4"
-                        style={{ fontFamily: 'var(--font-playfair), serif' }}
-                    >
-                        Join Our Community
-                    </h2>
-                    <p className="text-white text-base sm:text-lg md:text-xl mb-6 sm:mb-8 px-2" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                        Get early access and stay updated on our launch!
-                    </p>
-
-                    {/* Email Signup Form */}
-                    <FooterForm />
-
-                    {/* Footer Links */}
-                    <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-white/30">
-                        <p className="text-white/80 text-sm" style={{ fontFamily: 'var(--font-cormorant), serif' }}>
-                            © 2026 Clutch. All rights reserved.
-                        </p>
-                    </div>
-                </div>
-            </footer>
-        </main>
-    );
+      {sheetOpen && (
+        <LogSheet state={state} onClose={() => setSheetOpen(false)} />
+      )}
+    </main>
+  );
 }
