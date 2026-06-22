@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { CUISINES, CUISINE_BY_ID, type CuisineId } from "../../lib/cuisines";
 import {
   addMed,
@@ -8,14 +8,125 @@ import {
   removeMed,
   setDefaultCuisine,
   takeMed,
+  toggleCalorieBar,
+  updateFoodNutrition,
   type ClutchState,
+  type FoodLog,
+  type LogEntry,
   type MedSchedule,
   type MedType,
+  type NutritionInfo,
 } from "../../lib/store";
 import { fileToDataURL } from "./shared";
 import { foodInfo, SENTIMENT_COLOR } from "../../lib/foodInfo";
+import { STATIC_NUTRITION, estimateNutrition } from "../../lib/nutrition";
 
 type Tab = "food" | "med";
+
+// ---- nutrition cache (localStorage-backed, avoids re-hitting Groq for known foods) ----
+
+const CACHE_KEY = "clutch.nutrition.v1";
+const nutritionCache = new Map<string, NutritionInfo>();
+let cacheLoaded = false;
+
+function loadCache() {
+  if (cacheLoaded || typeof window === "undefined") return;
+  cacheLoaded = true;
+  try {
+    const raw = window.localStorage.getItem(CACHE_KEY);
+    if (raw) {
+      const entries = JSON.parse(raw) as [string, NutritionInfo][];
+      for (const [k, v] of entries) nutritionCache.set(k, v);
+    }
+  } catch {}
+}
+
+function saveCache() {
+  try {
+    window.localStorage.setItem(CACHE_KEY, JSON.stringify([...nutritionCache.entries()]));
+  } catch {}
+}
+
+// ---- ai helpers (server-routed, key never touches the client) ----------
+
+async function fetchNutrition(item: string, id: string): Promise<void> {
+  const key = item.trim().toLowerCase();
+
+  // 1. Static table — instant, covers every chip food, zero API calls
+  const staticData = STATIC_NUTRITION[key];
+  if (staticData) {
+    updateFoodNutrition(id, staticData);
+    return;
+  }
+
+  // 2. localStorage cache — covers custom foods previously fetched via Groq
+  loadCache();
+  const cached = nutritionCache.get(key);
+  if (cached) {
+    updateFoodNutrition(id, cached);
+    return;
+  }
+
+  // 3. Show local estimate immediately so the bar is never empty
+  updateFoodNutrition(id, estimateNutrition(key));
+
+  // 4. Try Groq in background — replaces estimate with accurate data if it succeeds (one attempt, no retry)
+  try {
+    const res = await fetch("/api/gemini/nutrition", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ item }),
+    });
+    if (!res.ok) return;
+    const nutrition: NutritionInfo = await res.json();
+    if (typeof nutrition.calories === "number" && nutrition.calories > 0) {
+      nutritionCache.set(key, nutrition);
+      saveCache();
+      updateFoodNutrition(id, nutrition);
+      console.log("[clutch/nutrition]", item, "→", nutrition.calories, "kcal (groq)");
+    }
+  } catch {
+    // estimate stays — no action needed
+  }
+}
+
+async function identifyPhoto(base64: string, mimeType: string): Promise<string> {
+  try {
+    const res = await fetch("/api/gemini/identify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ imageBase64: base64, mimeType }),
+    });
+    if (!res.ok) return "meal";
+    const data = await res.json();
+    return typeof data.item === "string" ? data.item : "meal";
+  } catch {
+    return "meal";
+  }
+}
+
+function compressImage(
+  dataURL: string,
+  maxDim = 768,
+): Promise<{ base64: string; mimeType: string }> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const out = canvas.toDataURL("image/jpeg", 0.85);
+      const [header, data] = out.split(",");
+      resolve({
+        base64: data,
+        mimeType: header.match(/data:([^;]+)/)?.[1] ?? "image/jpeg",
+      });
+    };
+    img.src = dataURL;
+  });
+}
 
 export default function LogSheet({
   state,
@@ -122,6 +233,93 @@ function SheetTab({
   );
 }
 
+// --- calorie bar ----------------------------------------------------------
+
+function CalorieBar({
+  logs,
+  goal,
+  pending = false,
+  show,
+}: {
+  logs: LogEntry[];
+  goal: number;
+  pending?: boolean;
+  show: boolean;
+}) {
+  const todayCalories = useMemo(() => {
+    const d = new Date();
+    const start = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    return logs
+      .filter((l): l is FoodLog => l.kind === "food" && l.ts >= start)
+      .reduce((sum, l) => sum + (l.nutrition?.calories ?? 0), 0);
+  }, [logs]);
+
+  if (!show) {
+    return (
+      <button
+        onClick={toggleCalorieBar}
+        className="flex items-center gap-1.5 py-0.5 font-phone-body text-[9px] text-clutch-chocolate/30 hover:text-clutch-hot"
+      >
+        <span className="text-[10px]">◎</span> show calories
+      </button>
+    );
+  }
+
+  if (todayCalories === 0 && !pending) return null;
+
+  if (todayCalories === 0 && pending) {
+    return (
+      <div className="rounded-xl border border-clutch-ink/10 bg-white/80 p-3">
+        <div className="flex items-center justify-between">
+          <span className="font-phone-body text-[10px] uppercase tracking-[0.14em] text-clutch-chocolate/55">
+            today
+          </span>
+          <span className="font-phone-display text-[11px] italic text-clutch-chocolate/40">
+            calculating nutrition…
+          </span>
+        </div>
+        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-clutch-ink/8">
+          <div className="h-full w-1/3 animate-pulse rounded-full bg-clutch-hot/30" />
+        </div>
+      </div>
+    );
+  }
+
+  const pct = Math.min(100, Math.round((todayCalories / goal) * 100));
+  const remaining = goal - todayCalories;
+
+  return (
+    <div className="rounded-xl border border-clutch-ink/10 bg-white/80 p-3">
+      <div className="mb-1.5 flex items-baseline justify-between">
+        <span className="font-phone-body text-[10px] uppercase tracking-[0.14em] text-clutch-chocolate/55">
+          today
+        </span>
+        <span className="font-phone-display text-[13px] italic text-clutch-ink">
+          {todayCalories}{" "}
+          <span className="text-[10px] not-italic text-clutch-chocolate/45">/ {goal} kcal</span>
+        </span>
+        <button
+          onClick={toggleCalorieBar}
+          className="font-phone-body text-[8px] text-clutch-chocolate/25 hover:text-clutch-hot"
+        >
+          hide ×
+        </button>
+      </div>
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-clutch-ink/8">
+        <div
+          className="h-full rounded-full transition-all duration-500"
+          style={{ width: `${pct}%`, backgroundColor: pct >= 100 ? "#C97A2B" : "#D23669" }}
+        />
+      </div>
+      <p className="mt-1 font-phone-body text-[8px] text-clutch-chocolate/40">
+        {remaining > 0
+          ? `${remaining} kcal remaining · mock goal`
+          : "daily goal reached ✓"}
+      </p>
+    </div>
+  );
+}
+
 // --- food -----------------------------------------------------------------
 
 function FoodTab({
@@ -135,6 +333,8 @@ function FoodTab({
 }) {
   const [activeCuisine, setActiveCuisine] = useState<CuisineId>(state.defaultCuisine);
   const [custom, setCustom] = useState("");
+  const [identifying, setIdentifying] = useState(false);
+  const [pendingNutrition, setPendingNutrition] = useState(0);
   const cameraRef = useRef<HTMLInputElement>(null);
 
   // default cuisine first, rest after — your wedge shows up top.
@@ -146,35 +346,57 @@ function FoodTab({
   const onPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const photo = await fileToDataURL(file);
-    logFood({ cuisine: activeCuisine, item: "meal 📸", photo });
     e.target.value = "";
-    onClose(); // the photo is the log — done.
+    setIdentifying(true);
+    const dataURL = await fileToDataURL(file);
+    const { base64, mimeType } = await compressImage(dataURL);
+    const identified = await identifyPhoto(base64, mimeType);
+    const entry = logFood({ cuisine: activeCuisine, item: identified, photo: dataURL });
+    fetchNutrition(identified, entry.id);
+    setIdentifying(false);
+    onClose();
   };
 
   const logChip = (item: string) => {
-    logFood({ cuisine: activeCuisine, item });
+    const entry = logFood({ cuisine: activeCuisine, item });
     const info = foodInfo(item);
     flash(`clipped ✓ ${item} · ${info.nutrients.slice(0, 2).join(" + ")}`);
+    setPendingNutrition((n) => n + 1);
+    fetchNutrition(item, entry.id).finally(() =>
+      setPendingNutrition((n) => Math.max(0, n - 1)),
+    );
   };
 
   const logCustom = () => {
     const item = custom.trim();
     if (!item) return;
-    logFood({ cuisine: "custom", item });
+    const entry = logFood({ cuisine: "custom", item });
     const info = foodInfo(item);
     flash(`clipped ✓ ${item} · ${info.nutrients.slice(0, 2).join(" + ")}`);
+    setPendingNutrition((n) => n + 1);
+    fetchNutrition(item, entry.id).finally(() =>
+      setPendingNutrition((n) => Math.max(0, n - 1)),
+    );
     setCustom("");
   };
 
   return (
     <div className="flex flex-col gap-4">
-      {/* snap a pic — default, fastest */}
+      {/* calorie counter — shows loading skeleton immediately, fills once Gemini responds */}
+      <CalorieBar logs={state.logs} goal={state.dailyCalorieGoal} pending={pendingNutrition > 0} show={state.showCalorieBar} />
+
+      {/* snap a pic — gemini identifies it */}
       <button
-        onClick={() => cameraRef.current?.click()}
-        className="flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-clutch-hot bg-clutch-softpink/40 py-4 font-phone-display text-sm italic text-clutch-hot transition-transform active:scale-[0.98]"
+        onClick={() => !identifying && cameraRef.current?.click()}
+        disabled={identifying}
+        className={`flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-clutch-hot py-4 font-phone-display text-sm italic transition-transform ${
+          identifying
+            ? "bg-clutch-softpink/60 text-clutch-hot/70"
+            : "bg-clutch-softpink/40 text-clutch-hot active:scale-[0.98]"
+        }`}
       >
-        <span className="text-xl">📷</span> snap a pic — the photo&apos;s the log
+        <span className="text-xl">{identifying ? "⏳" : "📷"}</span>
+        {identifying ? "identifying your meal…" : "snap a pic — ai identifies the food"}
       </button>
       <input
         ref={cameraRef}

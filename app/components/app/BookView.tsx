@@ -5,7 +5,7 @@
 // TAP drives the flip: right half → next page, left half → previous, using the
 // library's smooth animation (no drag needed). loaded via dynamic({ssr:false}).
 
-import { forwardRef, useMemo, useRef } from "react";
+import { forwardRef, useCallback, useMemo, useRef, useState } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { currentPhase, PHASES } from "../../lib/cycle";
 import { foodInfo, SENTIMENT_COLOR } from "../../lib/foodInfo";
@@ -47,13 +47,45 @@ function timeLabel(ts: number) {
 // ---- content rows (your existing layout) ----
 function MealRow({ entry }: { entry: FoodLog }) {
   const info = foodInfo(entry.item);
+  const [expanded, setExpanded] = useState(false);
+  const n = entry.nutrition;
+  // tap a meal (with nutrition) to expand macros; stopPropagation keeps the
+  // tap from bubbling up and flipping the page.
+  const toggle = useCallback(
+    (e: React.MouseEvent) => {
+      if (!n) return;
+      e.stopPropagation();
+      setExpanded((v) => !v);
+    },
+    [n],
+  );
   return (
-    <li className="group flex items-center gap-1.5 py-[3px]">
-      <KawaiiFood item={entry.item} size={26} className="shrink-0" />
-      <span className="min-w-0 flex-1 truncate font-pinyon leading-none text-clutch-hot" style={{ fontSize: 19 }}>{entry.item}</span>
-      <span aria-hidden className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: SENTIMENT_COLOR[info.sentiment] }} />
-      <button onClick={() => deleteLog(entry.id)} aria-label="remove" className="shrink-0 font-phone-body text-[9px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100">✕</button>
-    </li>
+    <>
+      <li
+        className={`group flex items-center gap-1.5 py-[3px] ${n ? "cursor-pointer select-none" : ""}`}
+        onClick={toggle}
+      >
+        <KawaiiFood item={entry.item} size={26} className="shrink-0" />
+        <span className="min-w-0 flex-1 truncate font-pinyon leading-none text-clutch-hot" style={{ fontSize: 19 }}>{entry.item}</span>
+        {n?.calories != null && (
+          <span className="shrink-0 font-phone-body text-[8px] text-clutch-chocolate/40">{n.calories}</span>
+        )}
+        <span aria-hidden className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: SENTIMENT_COLOR[info.sentiment] }} />
+        <button onClick={(e) => { e.stopPropagation(); deleteLog(entry.id); }} aria-label="remove" className="shrink-0 font-phone-body text-[9px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100">✕</button>
+      </li>
+      {expanded && n && (
+        <li className="pb-1 pl-[29px]">
+          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 font-phone-body text-[7.5px] text-clutch-chocolate/50">
+            <span><span className="text-clutch-hot/70">{n.calories}</span> kcal</span>
+            <span><span className="text-clutch-hot/70">{n.protein}g</span> prot</span>
+            <span><span className="text-clutch-hot/70">{n.carbs}g</span> carb</span>
+            <span><span className="text-clutch-hot/70">{n.fat}g</span> fat</span>
+            {n.sugar > 0 && <span><span className="text-clutch-hot/70">{n.sugar}g</span> sugar</span>}
+          </div>
+          <p className="mt-0.5 font-phone-body text-[7px] italic text-clutch-chocolate/30">{n.portionLabel}</p>
+        </li>
+      )}
+    </>
   );
 }
 function MedRow({ entry }: { entry: MedLog }) {
@@ -141,6 +173,7 @@ export default function BookView({ state, onAdd }: { state: ClutchState; onAdd: 
     const meta = PHASES[phase];
     const meals = [...d.entry.meals].sort((a, b) => a.ts - b.ts);
     const meds = [...d.entry.meds].sort((a, b) => a.ts - b.ts);
+    const totalCals = meals.reduce((sum, f) => sum + (f.nutrition?.calories ?? 0), 0);
     pageEls.push(
       <Page key={`${d.key}-L`} side="left">
         <div className="flex items-start justify-between">
@@ -162,6 +195,9 @@ export default function BookView({ state, onAdd }: { state: ClutchState; onAdd: 
           {d.isToday && <GhostAdd label="add a meal…" onClick={() => onAdd("food")} />}
           {!d.isToday && meals.length === 0 && <li className="py-0.5 font-phone-display text-[10px] italic text-clutch-chocolate/35">nothing here.</li>}
         </ul>
+        {totalCals > 0 && (
+          <p className="mt-0.5 px-0.5 font-phone-body text-[7px] text-clutch-chocolate/35">{totalCals} kcal total</p>
+        )}
       </Page>,
     );
     pageEls.push(
