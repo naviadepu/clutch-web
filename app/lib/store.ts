@@ -12,6 +12,16 @@ import type { JournalColorId } from "./journal";
 export type MedType = "pill" | "supplement" | "birth-control" | "prn";
 export type MedSchedule = "daily" | "specific-days" | "as-needed";
 
+export type NutritionInfo = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  sugar: number;
+  portionGrams: number;
+  portionLabel: string;
+};
+
 export type Med = {
   id: string;
   name: string;
@@ -32,6 +42,7 @@ export type FoodLog = {
   item: string;
   photo?: string; // dataURL, optional — the photo IS the log
   portion?: string; // optional, default skips it
+  nutrition?: NutritionInfo; // fetched async from Gemini after logging
 };
 
 export type MedLog = {
@@ -55,6 +66,10 @@ export type ClutchState = {
   savedPatternIds: string[];
   dismissedPatternIds: string[];
   savePromptDismissed: boolean;
+  dailyCalorieGoal: number;
+  userName: string;
+  namePromptDone: boolean;
+  showCalorieBar: boolean;
 };
 
 const STORAGE_KEY = "clutch.guest.v1";
@@ -69,6 +84,10 @@ function freshState(): ClutchState {
     savedPatternIds: [],
     dismissedPatternIds: [],
     savePromptDismissed: false,
+    dailyCalorieGoal: 2000,
+    userName: "",
+    namePromptDone: false,
+    showCalorieBar: true,
   };
 }
 
@@ -206,6 +225,15 @@ export function deleteLog(id: string) {
   setState({ ...state, logs: state.logs.filter((l) => l.id !== id) });
 }
 
+export function updateFoodNutrition(id: string, nutrition: NutritionInfo) {
+  setState({
+    ...state,
+    logs: state.logs.map((l) =>
+      l.id === id && l.kind === "food" ? { ...l, nutrition } : l,
+    ),
+  });
+}
+
 export function setDefaultCuisine(cuisine: CuisineId) {
   setState({ ...state, defaultCuisine: cuisine });
 }
@@ -233,4 +261,12 @@ export function dismissPattern(id: string) {
 
 export function dismissSavePrompt() {
   setState({ ...state, savePromptDismissed: true });
+}
+
+export function setUserName(name: string) {
+  setState({ ...state, userName: name.trim(), namePromptDone: true });
+}
+
+export function toggleCalorieBar() {
+  setState({ ...state, showCalorieBar: !state.showCalorieBar });
 }

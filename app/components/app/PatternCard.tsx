@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { PHASES } from "../../lib/cycle";
 import type { PatternCard as PatternCardData } from "../../lib/patterns";

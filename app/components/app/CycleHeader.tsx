@@ -21,7 +21,7 @@ export default function CycleHeader({ state }: { state: ClutchState }) {
       <div className="flex items-end justify-between">
         <div>
           <p className="font-pinyon text-clutch-hot" style={{ fontSize: 40, lineHeight: 0.85 }}>
-            hi, navi.
+            hi, {state.userName || "you"}.
           </p>
           <p className="mt-1 flex items-center gap-1.5 font-phone-body text-[10px] uppercase tracking-[0.18em] text-clutch-chocolate/80">
             <span>day {day}</span>

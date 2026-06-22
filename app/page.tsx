@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { hydrate, useClutch, dismissSavePrompt, setJournalColor } from "./lib/store";
+import { AnimatePresence, motion } from "framer-motion";
+import { hydrate, useClutch, dismissSavePrompt, setJournalColor, setUserName } from "./lib/store";
 import { computePattern } from "./lib/patterns";
 import CycleHeader from "./components/app/CycleHeader";
 import BookView from "./components/app/BookView";
@@ -12,6 +12,45 @@ import LogSheet from "./components/app/LogSheet";
 import JournalCover from "./components/app/JournalCover";
 import { FourPointStar, PixelHeart } from "./components/phone/decorations";
 import { Bow } from "./components/app/scrapbook";
+
+function NamePrompt() {
+  const [name, setName] = useState("");
+
+  const submit = () => setUserName(name);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[75] flex items-center justify-center bg-clutch-cream/93 backdrop-blur-sm"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.2 } }}
+    >
+      <div className="w-full max-w-[280px] px-2 text-center">
+        <p className="font-pinyon text-clutch-hot" style={{ fontSize: 46, lineHeight: 0.9 }}>
+          hi, you.
+        </p>
+        <p className="mt-3 font-phone-body text-[10px] uppercase tracking-[0.18em] text-clutch-chocolate/55">
+          what should we call you?
+        </p>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && submit()}
+          placeholder="your name…"
+          autoFocus
+          className="mt-4 w-full rounded-full border border-clutch-ink/20 bg-white px-4 py-2.5 text-center font-phone-display text-[14px] italic text-clutch-ink placeholder:not-italic placeholder:text-clutch-chocolate/35 focus:border-clutch-hot focus:outline-none"
+        />
+        <button
+          onClick={submit}
+          className="mt-3 w-full rounded-full bg-clutch-hot px-5 py-2.5 font-phone-body text-[11px] uppercase tracking-[0.12em] text-white transition-transform active:scale-95"
+        >
+          {name.trim() ? `that's me ✓` : "skip →"}
+        </button>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -48,6 +87,13 @@ export default function Home() {
 
   return (
     <main className="bg-desk min-h-[100dvh] w-full">
+      {/* name prompt — shown once after the journal first flips open */}
+      <AnimatePresence>
+        {opened && !state.namePromptDone && (
+          <NamePrompt />
+        )}
+      </AnimatePresence>
+
       {/* the closed journal — tap to flip open into your diary */}
       {!opened && (
         <div

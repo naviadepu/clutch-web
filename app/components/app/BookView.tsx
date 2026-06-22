@@ -4,7 +4,7 @@
 // page = meals, right page = medication. thick pages (the photo's fore-edges +
 // a stacked block); flip through one day-spread at a time.
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useCallback } from "react";
 import { animate, motion, useMotionValue, useTransform } from "framer-motion";
 import { currentPhase, PHASES } from "../../lib/cycle";
 import { foodInfo, SENTIMENT_COLOR } from "../../lib/foodInfo";
@@ -40,17 +40,51 @@ function dateStamp(ts: number) {
 
 function MealRow({ entry }: { entry: FoodLog }) {
   const info = foodInfo(entry.item);
+  const [expanded, setExpanded] = useState(false);
+  const n = entry.nutrition;
+  const toggle = useCallback((e: React.MouseEvent) => {
+    if (!n) return;
+    e.stopPropagation();
+    setExpanded((v) => !v);
+  }, [n]);
+
   return (
-    <li className="group flex items-center gap-1.5 py-[3px]">
-      <KawaiiFood item={entry.item} size={26} className="shrink-0" />
-      <span className="min-w-0 flex-1 truncate font-pinyon leading-none text-clutch-hot" style={{ fontSize: 19 }}>
-        {entry.item}
-      </span>
-      <span aria-hidden className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: SENTIMENT_COLOR[info.sentiment] }} />
-      <button onClick={() => deleteLog(entry.id)} aria-label="remove" className="shrink-0 font-phone-body text-[9px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100">
-        ✕
-      </button>
-    </li>
+    <>
+      <li
+        className={`group flex items-center gap-1.5 py-[3px] ${n ? "cursor-pointer select-none" : ""}`}
+        onClick={toggle}
+      >
+        <KawaiiFood item={entry.item} size={26} className="shrink-0" />
+        <span className="min-w-0 flex-1 truncate font-pinyon leading-none text-clutch-hot" style={{ fontSize: 19 }}>
+          {entry.item}
+        </span>
+        {n?.calories != null && (
+          <span className="shrink-0 font-phone-body text-[8px] text-clutch-chocolate/40">
+            {n.calories}
+          </span>
+        )}
+        <span aria-hidden className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: SENTIMENT_COLOR[info.sentiment] }} />
+        <button
+          onClick={(e) => { e.stopPropagation(); deleteLog(entry.id); }}
+          aria-label="remove"
+          className="shrink-0 font-phone-body text-[9px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100"
+        >
+          ✕
+        </button>
+      </li>
+      {expanded && n && (
+        <li className="pb-1 pl-[29px]">
+          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 font-phone-body text-[7.5px] text-clutch-chocolate/50">
+            <span><span className="text-clutch-hot/70">{n.calories}</span> kcal</span>
+            <span><span className="text-clutch-hot/70">{n.protein}g</span> prot</span>
+            <span><span className="text-clutch-hot/70">{n.carbs}g</span> carb</span>
+            <span><span className="text-clutch-hot/70">{n.fat}g</span> fat</span>
+            {n.sugar > 0 && <span><span className="text-clutch-hot/70">{n.sugar}g</span> sugar</span>}
+          </div>
+          <p className="mt-0.5 font-phone-body text-[7px] italic text-clutch-chocolate/30">{n.portionLabel}</p>
+        </li>
+      )}
+    </>
   );
 }
 
@@ -88,11 +122,13 @@ function PageColumn({
   title,
   accent,
   children,
+  footer,
   style,
 }: {
   title: string;
   accent: string;
   children: React.ReactNode;
+  footer?: React.ReactNode;
   style: React.CSSProperties;
 }) {
   return (
@@ -102,6 +138,7 @@ function PageColumn({
         {title}
       </p>
       <ul className="min-h-0 flex-1 overflow-y-auto pr-0.5">{children}</ul>
+      {footer}
     </div>
   );
 }
@@ -111,6 +148,7 @@ function Spread({ page, cycleStartISO, onAdd }: { page: DayPage; cycleStartISO: 
   const meta = PHASES[phase];
   const foods = [...page.foods].sort((a, b) => a.ts - b.ts);
   const meds = [...page.meds].sort((a, b) => a.ts - b.ts);
+  const totalCals = foods.reduce((sum, f) => sum + (f.nutrition?.calories ?? 0), 0);
 
   return (
     <>
@@ -126,7 +164,18 @@ function Spread({ page, cycleStartISO, onAdd }: { page: DayPage; cycleStartISO: 
       </div>
 
       {/* LEFT page — meals */}
-      <PageColumn title="meals" accent={meta.color} style={{ left: "8%", top: "20%", width: "37%", bottom: "16%" }}>
+      <PageColumn
+        title="meals"
+        accent={meta.color}
+        style={{ left: "8%", top: "20%", width: "37%", bottom: "16%" }}
+        footer={
+          totalCals > 0 ? (
+            <p className="mt-0.5 font-phone-body text-[7px] text-clutch-chocolate/35">
+              {totalCals} kcal
+            </p>
+          ) : undefined
+        }
+      >
         {foods.map((f) => <MealRow key={f.id} entry={f} />)}
         {page.isToday && <GhostAdd label="add a meal…" onClick={() => onAdd("food")} />}
         {!page.isToday && foods.length === 0 && (
