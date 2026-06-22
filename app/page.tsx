@@ -5,8 +5,10 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { hydrate, useClutch, dismissSavePrompt, setJournalColor } from "./lib/store";
 import { computePattern } from "./lib/patterns";
+import dynamic from "next/dynamic";
 import CycleHeader from "./components/app/CycleHeader";
-import BookView from "./components/app/BookView";
+// react-pageflip is client-only (touches the DOM) — load after hydration.
+const BookView = dynamic(() => import("./components/app/BookView"), { ssr: false });
 import PatternCard from "./components/app/PatternCard";
 import LogSheet from "./components/app/LogSheet";
 import JournalCover from "./components/app/JournalCover";

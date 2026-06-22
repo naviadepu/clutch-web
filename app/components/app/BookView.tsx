@@ -1,11 +1,12 @@
 "use client";
 
-// the opened journal — the real two-page blank spread (the exact photo). left
-// page = meals, right page = medication. thick pages (the photo's fore-edges +
-// a stacked block); flip through one day-spread at a time.
+// the opened journal — smooth corner-curl page turns via react-pageflip.
+// each calendar day = ONE spread (left page = meals, right page = meds).
+// TAP drives the flip: right half → next page, left half → previous, using the
+// library's smooth animation (no drag needed). loaded via dynamic({ssr:false}).
 
-import { useMemo, useRef, useState } from "react";
-import { animate, motion, useMotionValue, useTransform } from "framer-motion";
+import { forwardRef, useMemo, useRef } from "react";
+import HTMLFlipBook from "react-pageflip";
 import { currentPhase, PHASES } from "../../lib/cycle";
 import { foodInfo, SENTIMENT_COLOR } from "../../lib/foodInfo";
 import {
@@ -19,60 +20,52 @@ import KawaiiFood from "./KawaiiFood";
 import { PhaseChip } from "./shared";
 import { FourPointStar } from "../phone/decorations";
 
+const FlipBook = HTMLFlipBook as unknown as React.ComponentType<Record<string, unknown>>;
+
 type AddTab = "food" | "med";
-type DayPage = { key: string; ts: number; foods: FoodLog[]; meds: MedLog[]; isToday: boolean };
+type DayEntry = { meals: FoodLog[]; meds: MedLog[] };
 
 function dayKey(ts: number) {
   const d = new Date(ts);
   return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 }
 function heading(ts: number, todayKey: string) {
-  const isToday = dayKey(ts) === todayKey;
+  const k = dayKey(ts);
+  if (k === todayKey) return "today";
   const y = new Date();
   y.setDate(y.getDate() - 1);
-  if (isToday) return "today";
-  if (dayKey(ts) === dayKey(y.getTime())) return "yesterday";
+  if (k === dayKey(y.getTime())) return "yesterday";
   return new Date(ts).toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
 }
 function dateStamp(ts: number) {
   return new Date(ts).toLocaleDateString("en-US", { month: "short", day: "numeric" }).toLowerCase();
 }
+function timeLabel(ts: number) {
+  return new Date(ts).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }).toLowerCase().replace(" ", "");
+}
 
+// ---- content rows (your existing layout) ----
 function MealRow({ entry }: { entry: FoodLog }) {
   const info = foodInfo(entry.item);
   return (
     <li className="group flex items-center gap-1.5 py-[3px]">
       <KawaiiFood item={entry.item} size={26} className="shrink-0" />
-      <span className="min-w-0 flex-1 truncate font-pinyon leading-none text-clutch-hot" style={{ fontSize: 19 }}>
-        {entry.item}
-      </span>
+      <span className="min-w-0 flex-1 truncate font-pinyon leading-none text-clutch-hot" style={{ fontSize: 19 }}>{entry.item}</span>
       <span aria-hidden className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: SENTIMENT_COLOR[info.sentiment] }} />
-      <button onClick={() => deleteLog(entry.id)} aria-label="remove" className="shrink-0 font-phone-body text-[9px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100">
-        ✕
-      </button>
+      <button onClick={() => deleteLog(entry.id)} aria-label="remove" className="shrink-0 font-phone-body text-[9px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100">✕</button>
     </li>
   );
 }
-
 function MedRow({ entry }: { entry: MedLog }) {
   return (
     <li className="group flex items-center gap-1.5 py-[3px]">
-      <span aria-hidden className="grid h-[26px] w-[26px] shrink-0 place-items-center rounded-full text-[13px]" style={{ backgroundColor: entry.isBirthControl ? "#E7D6EC" : "#FBE4D6" }}>
-        {entry.isBirthControl ? "🌸" : "💊"}
-      </span>
-      <span className="min-w-0 flex-1 truncate font-pinyon leading-none text-clutch-hot" style={{ fontSize: 19 }}>
-        {entry.name}
-      </span>
-      {entry.isBirthControl && (
-        <span className="shrink-0 font-phone-body text-[6px] uppercase tracking-wide text-clutch-chocolate/40">bc</span>
-      )}
-      <button onClick={() => deleteLog(entry.id)} aria-label="remove" className="shrink-0 font-phone-body text-[9px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100">
-        ✕
-      </button>
+      <span aria-hidden className="grid h-[26px] w-[26px] shrink-0 place-items-center rounded-full text-[13px]" style={{ backgroundColor: entry.isBirthControl ? "#E7D6EC" : "#FBE4D6" }}>{entry.isBirthControl ? "🌸" : "💊"}</span>
+      <span className="min-w-0 flex-1 truncate font-pinyon leading-none text-clutch-hot" style={{ fontSize: 19 }}>{entry.name}</span>
+      <span className="shrink-0 font-phone-body text-[7px] uppercase tracking-wide text-clutch-chocolate/40">{timeLabel(entry.ts)}</span>
+      <button onClick={() => deleteLog(entry.id)} aria-label="remove" className="shrink-0 font-phone-body text-[9px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100">✕</button>
     </li>
   );
 }
-
 function GhostAdd({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <li>
@@ -84,197 +77,142 @@ function GhostAdd({ label, onClick }: { label: string; onClick: () => void }) {
   );
 }
 
-function PageColumn({
-  title,
-  accent,
-  children,
-  style,
-}: {
-  title: string;
-  accent: string;
-  children: React.ReactNode;
-  style: React.CSSProperties;
-}) {
-  return (
-    <div className="absolute flex flex-col" style={style}>
-      <p className="mb-1 flex items-center gap-1 border-b border-clutch-ink/12 pb-0.5 font-pinyon leading-none" style={{ fontSize: 21, color: accent }}>
-        <FourPointStar size={10} color={accent} />
-        {title}
-      </p>
-      <ul className="min-h-0 flex-1 overflow-y-auto pr-0.5">{children}</ul>
-    </div>
-  );
-}
-
-function Spread({ page, cycleStartISO, onAdd }: { page: DayPage; cycleStartISO: string; onAdd: (t: AddTab) => void }) {
-  const phase = currentPhase(cycleStartISO, page.ts);
-  const meta = PHASES[phase];
-  const foods = [...page.foods].sort((a, b) => a.ts - b.ts);
-  const meds = [...page.meds].sort((a, b) => a.ts - b.ts);
-
-  return (
-    <>
-      {/* date tab across the spine */}
-      <div className="absolute left-1/2 top-[5%] z-20 flex -translate-x-1/2 flex-col items-center">
-        <span className="flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-0.5 font-pinyon leading-none text-clutch-hot shadow-sm" style={{ fontSize: 19 }}>
-          {heading(page.ts, dayKey(Date.now()))}
-        </span>
-        <span className="mt-0.5 flex items-center gap-1">
-          <span className="font-phone-body text-[7px] uppercase tracking-[0.14em] text-clutch-chocolate/55">{dateStamp(page.ts)}</span>
-          <PhaseChip phase={phase} size="sm" />
-        </span>
+// one physical page. forwardRef so StPageFlip can drive the curl. cream paper =
+// the real page.png crop; the spine edge gets a soft shadow.
+const Page = forwardRef<HTMLDivElement, { side: "left" | "right"; children: React.ReactNode }>(
+  function Page({ side, children }, ref) {
+    return (
+      <div ref={ref} className="overflow-hidden bg-[#FFFDF7]" style={{ backgroundImage: "url(/images/journal/page.png)", backgroundSize: "cover", backgroundPosition: side === "left" ? "left" : "right" }}>
+        <div className="relative h-full w-full px-3.5 py-3">
+          <div aria-hidden className={`pointer-events-none absolute inset-y-0 w-5 ${side === "left" ? "right-0 bg-gradient-to-l" : "left-0 bg-gradient-to-r"} from-black/12 to-transparent`} />
+          {children}
+        </div>
       </div>
-
-      {/* LEFT page — meals */}
-      <PageColumn title="meals" accent={meta.color} style={{ left: "8%", top: "20%", width: "37%", bottom: "16%" }}>
-        {foods.map((f) => <MealRow key={f.id} entry={f} />)}
-        {page.isToday && <GhostAdd label="add a meal…" onClick={() => onAdd("food")} />}
-        {!page.isToday && foods.length === 0 && (
-          <li className="py-0.5 font-phone-display text-[9px] italic text-clutch-chocolate/35">nothing here.</li>
-        )}
-      </PageColumn>
-
-      {/* RIGHT page — medication */}
-      <PageColumn title="meds" accent={meta.color} style={{ right: "8%", top: "20%", width: "37%", bottom: "16%" }}>
-        {meds.map((m) => <MedRow key={m.id} entry={m} />)}
-        {page.isToday && <GhostAdd label="add a med…" onClick={() => onAdd("med")} />}
-        {!page.isToday && meds.length === 0 && (
-          <li className="py-0.5 font-phone-display text-[9px] italic text-clutch-chocolate/35">none taken.</li>
-        )}
-      </PageColumn>
-    </>
-  );
-}
+    );
+  },
+);
 
 export default function BookView({ state, onAdd }: { state: ClutchState; onAdd: (t: AddTab) => void }) {
   const todayKey = dayKey(Date.now());
+  // ref to the flip book → lets a tap call its smooth flipNext()/flipPrev()
+  const bookRef = useRef<{ pageFlip: () => { flipNext: () => void; flipPrev: () => void } } | null>(null);
 
-  const pages = useMemo<DayPage[]>(() => {
-    const buckets = new Map<string, DayPage>();
-    buckets.set(todayKey, { key: todayKey, ts: Date.now(), foods: [], meds: [], isToday: true });
+  // date-keyed dict + a CONTINUOUS range (earliest entry, or ≥ a week back, → today)
+  // so there are always pages to flip; empty days render as empty spreads.
+  const days = useMemo(() => {
+    const diary: Record<string, DayEntry> = {};
+    let earliest = Date.now();
     for (const log of state.logs as LogEntry[]) {
       const k = dayKey(log.ts);
-      let b = buckets.get(k);
-      if (!b) {
-        b = { key: k, ts: log.ts, foods: [], meds: [], isToday: k === todayKey };
-        buckets.set(k, b);
-      }
-      if (log.ts < b.ts && !b.isToday) b.ts = log.ts;
-      if (log.kind === "food") b.foods.push(log);
-      else b.meds.push(log);
+      (diary[k] ??= { meals: [], meds: [] });
+      if (log.kind === "food") diary[k].meals.push(log);
+      else diary[k].meds.push(log);
+      if (log.ts < earliest) earliest = log.ts;
     }
-    return Array.from(buckets.values()).sort((a, b) => b.ts - a.ts);
+    const today = new Date(); today.setHours(12, 0, 0, 0);
+    const minStart = new Date(today); minStart.setDate(minStart.getDate() - 6);
+    const earliestDay = new Date(earliest); earliestDay.setHours(12, 0, 0, 0);
+    const start = earliestDay < minStart ? earliestDay : minStart;
+    const out: { key: string; ts: number; entry: DayEntry; isToday: boolean }[] = [];
+    const cur = new Date(start);
+    while (cur <= today) {
+      const k = dayKey(cur.getTime());
+      out.push({ key: k, ts: cur.getTime(), entry: diary[k] ?? { meals: [], meds: [] }, isToday: k === todayKey });
+      cur.setDate(cur.getDate() + 1);
+    }
+    return out.reverse(); // today first; flipNext → older, flipPrev → newer
   }, [state.logs, todayKey]);
 
-  const [idx, setIdx] = useState(0);
-  const clamped = Math.min(idx, pages.length - 1);
-  const page = pages[clamped];
-
-  // grab the page and drag sideways — it turns like a real page, hinged at the
-  // spine, following your cursor. release past the fold to commit the flip.
-  const ry = useMotionValue(0); // rotateY of the top page
-  const shade = useTransform(ry, [-180, 0, 180], [0.45, 0, 0.45]);
-  const drag = useRef<{ x: number; y: number; active: boolean; engaged: boolean } | null>(null);
-  const animating = useRef(false);
-
-  const canNewer = clamped > 0; // toward today — drag right
-  const canOlder = clamped < pages.length - 1; // back in time — drag left
-
-  const onDown = (e: React.PointerEvent) => {
-    if (animating.current) return;
-    drag.current = { x: e.clientX, y: e.clientY, active: true, engaged: false };
+  // tap → drive the library's smooth flip. right half = next page (older),
+  // left half = previous (newer). taps on add/delete buttons don't flip.
+  const onTapFlip = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest("button")) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const fp = bookRef.current?.pageFlip?.();
+    if (!fp) return;
+    if (e.clientX - rect.left > rect.width / 2) fp.flipNext();
+    else fp.flipPrev();
   };
-  const onMove = (e: React.PointerEvent) => {
-    const d = drag.current;
-    if (!d?.active) return;
-    const dx = e.clientX - d.x;
-    const dy = e.clientY - d.y;
-    if (!d.engaged) {
-      if (Math.abs(dx) < 10) return;
-      if (Math.abs(dx) <= Math.abs(dy)) {
-        d.active = false; // it's a vertical scroll, not a page turn
-        return;
-      }
-      d.engaged = true;
-    }
-    let r = dx * 0.6;
-    if (r < 0 && !canOlder) r = Math.max(r, -22); // resistance at the last page
-    if (r > 0 && !canNewer) r = Math.min(r, 22);
-    ry.set(Math.max(-180, Math.min(180, r)));
-  };
-  const onUp = (e: React.PointerEvent) => {
-    const d = drag.current;
-    drag.current = null;
-    if (!d?.engaged) return;
-    const dx = e.clientX - d.x;
-    const finish = (to: number, commit: () => void) => {
-      animating.current = true;
-      animate(ry, to, { duration: 0.3, ease: [0.4, 0, 0.2, 1] }).then(() => {
-        commit();
-        ry.set(0);
-        animating.current = false;
-      });
-    };
-    if (dx < -70 && canOlder) finish(-180, () => setIdx(clamped + 1));
-    else if (dx > 70 && canNewer) finish(180, () => setIdx(clamped - 1));
-    else animate(ry, 0, { type: "spring", stiffness: 280, damping: 26 });
-  };
+
+  // build 2 pages per day
+  const pageEls: React.ReactNode[] = [];
+  for (const d of days) {
+    const phase = currentPhase(state.cycleStartISO, d.ts);
+    const meta = PHASES[phase];
+    const meals = [...d.entry.meals].sort((a, b) => a.ts - b.ts);
+    const meds = [...d.entry.meds].sort((a, b) => a.ts - b.ts);
+    pageEls.push(
+      <Page key={`${d.key}-L`} side="left">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="flex items-center gap-1 font-pinyon text-clutch-hot" style={{ fontSize: 26, lineHeight: 0.85 }}>
+              {d.isToday && <FourPointStar size={11} color={meta.color} className="sparkle-spin" />}
+              {heading(d.ts, todayKey)}
+            </p>
+            <p className="mt-0.5 font-phone-body text-[8px] uppercase tracking-[0.14em] text-clutch-chocolate/60">{dateStamp(d.ts)} · {meta.state}</p>
+          </div>
+          <PhaseChip phase={phase} size="sm" />
+        </div>
+        <div className="my-1.5 h-px bg-clutch-ink/10" />
+        <p className="mb-0.5 flex items-center gap-1 font-pinyon leading-none" style={{ fontSize: 19, color: meta.color }}>
+          <FourPointStar size={9} color={meta.color} /> meals
+        </p>
+        <ul className="max-h-[64%] overflow-y-auto pr-0.5">
+          {meals.map((f) => <MealRow key={f.id} entry={f} />)}
+          {d.isToday && <GhostAdd label="add a meal…" onClick={() => onAdd("food")} />}
+          {!d.isToday && meals.length === 0 && <li className="py-0.5 font-phone-display text-[10px] italic text-clutch-chocolate/35">nothing here.</li>}
+        </ul>
+      </Page>,
+    );
+    pageEls.push(
+      <Page key={`${d.key}-R`} side="right">
+        <p className="mb-1 mt-6 flex items-center gap-1 font-pinyon leading-none" style={{ fontSize: 19, color: meta.color }}>
+          <FourPointStar size={9} color={meta.color} /> meds
+        </p>
+        <ul className="max-h-[72%] overflow-y-auto pr-0.5">
+          {meds.map((m) => <MedRow key={m.id} entry={m} />)}
+          {d.isToday && <GhostAdd label="add a med…" onClick={() => onAdd("med")} />}
+          {!d.isToday && meds.length === 0 && <li className="py-0.5 font-phone-display text-[10px] italic text-clutch-chocolate/35">none taken.</li>}
+        </ul>
+      </Page>,
+    );
+  }
 
   return (
     <div
       className="relative rounded-2xl border border-clutch-ink/10 px-3 pb-4 pt-4 shadow-inner"
       style={{ backgroundImage: "url(/images/journal/stripes.png)", backgroundSize: "100% auto", backgroundRepeat: "repeat-y" }}
     >
-      <div className="relative mx-auto w-full max-w-[420px]" style={{ perspective: 1700 }}>
-        <div className="relative w-full" style={{ aspectRatio: "684 / 528" }}>
-          {/* thick page block behind the top page */}
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div
-              key={i}
-              aria-hidden
-              className="absolute inset-0 rounded-md"
-              style={{
-                transform: `translateY(${(i + 1) * 2.2}px)`,
-                background: i % 2 ? "#F2E9D6" : "#E8DCC2",
-                boxShadow: "inset 0 -1px 0 rgba(150,120,80,0.18)",
-                zIndex: 0,
-              }}
-            />
-          ))}
-
-          {/* the top page — grab + drag to turn */}
-          <motion.div
-            key={page.key}
-            onPointerDown={onDown}
-            onPointerMove={onMove}
-            onPointerUp={onUp}
-            onPointerCancel={onUp}
-            style={{
-              rotateY: ry,
-              transformOrigin: "left center",
-              transformStyle: "preserve-3d",
-              backgroundImage: "url(/images/journal/open-book.png)",
-              backgroundSize: "100% 100%",
-              touchAction: "pan-y",
-            }}
-            className="absolute inset-0 z-10 cursor-grab select-none rounded-md shadow-[0_6px_18px_rgba(120,90,70,0.28)] active:cursor-grabbing"
-          >
-            {/* underside shade as the page turns */}
-            <motion.div aria-hidden className="pointer-events-none absolute inset-0 rounded-md bg-[#3a2a30]" style={{ opacity: shade }} />
-            {/* center spine shadow */}
-            <div aria-hidden className="pointer-events-none absolute inset-y-[8%] left-1/2 w-6 -translate-x-1/2 bg-[radial-gradient(ellipse_at_center,rgba(80,50,40,0.16),transparent_70%)]" />
-            <Spread page={page} cycleStartISO={state.cycleStartISO} onAdd={onAdd} />
-
-            {/* dog-ear corner — the grab hint */}
-            {(canOlder || canNewer) && (
-              <div aria-hidden className="pointer-events-none absolute bottom-1.5 right-1.5 h-7 w-7">
-                <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, transparent 50%, rgba(214,51,108,0.18) 50%)", borderBottomRightRadius: 6 }} />
-                <div className="absolute bottom-0 right-0 h-4 w-4" style={{ background: "linear-gradient(135deg, #FBEFE6, #EAD9C6)", clipPath: "polygon(100% 0, 0 100%, 100% 100%)", boxShadow: "-1px -1px 2px rgba(0,0,0,0.12)" }} />
-              </div>
-            )}
-          </motion.div>
-        </div>
+      <div
+        className="mx-auto"
+        onClick={onTapFlip}
+        style={{ width: "min(94vw, 440px)", filter: "drop-shadow(3px 5px 0 #EADBC4) drop-shadow(6px 9px 0 rgba(210,180,140,0.4))" }}
+      >
+        <FlipBook
+          ref={bookRef}
+          key={`${days[0]?.key}_${days.length}`}
+          width={210}
+          height={300}
+          size="stretch"
+          minWidth={150}
+          maxWidth={230}
+          minHeight={214}
+          maxHeight={340}
+          startPage={0}
+          showCover={false}
+          usePortrait={false}
+          mobileScrollSupport={false}
+          disableFlipByClick
+          maxShadowOpacity={0.5}
+          drawShadow
+          flippingTime={700}
+        >
+          {pageEls}
+        </FlipBook>
       </div>
+      <p className="mt-2 text-center font-phone-body text-[8px] uppercase tracking-[0.16em] text-clutch-chocolate/45">
+        tap left / right to flip the page
+      </p>
     </div>
   );
 }
