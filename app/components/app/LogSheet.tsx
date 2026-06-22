@@ -13,6 +13,7 @@ import {
   type MedType,
 } from "../../lib/store";
 import { fileToDataURL } from "./shared";
+import { foodInfo, SENTIMENT_COLOR } from "../../lib/foodInfo";
 
 type Tab = "food" | "med";
 
@@ -153,14 +154,16 @@ function FoodTab({
 
   const logChip = (item: string) => {
     logFood({ cuisine: activeCuisine, item });
-    flash(`logged ✓ ${item}`);
+    const info = foodInfo(item);
+    flash(`clipped ✓ ${item} · ${info.nutrients.slice(0, 2).join(" + ")}`);
   };
 
   const logCustom = () => {
     const item = custom.trim();
     if (!item) return;
     logFood({ cuisine: "custom", item });
-    flash(`logged ✓ ${item}`);
+    const info = foodInfo(item);
+    flash(`clipped ✓ ${item} · ${info.nutrients.slice(0, 2).join(" + ")}`);
     setCustom("");
   };
 
@@ -210,18 +213,31 @@ function FoodTab({
           })}
         </div>
 
-        {/* chips = one tap each */}
+        {/* chips = one tap each. dot = how it tends to play with your cycle. */}
         <div className="mt-2 flex flex-wrap gap-1.5">
           {CUISINE_BY_ID[activeCuisine].items.map((item) => (
             <button
               key={item}
               onClick={() => logChip(item)}
-              className="rounded-full border border-clutch-ink/15 bg-white px-3 py-1.5 font-phone-display text-[12px] italic text-clutch-ink transition-all hover:border-clutch-hot hover:text-clutch-hot active:scale-90"
+              className="flex items-center gap-1.5 rounded-full border border-clutch-ink/15 bg-white px-3 py-1.5 font-phone-display text-[12px] italic text-clutch-ink transition-all hover:border-clutch-hot hover:text-clutch-hot active:scale-90"
             >
+              <span
+                aria-hidden
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: SENTIMENT_COLOR[foodInfo(item).sentiment] }}
+              />
               {item}
             </button>
           ))}
         </div>
+        <p className="mt-1.5 flex items-center gap-2 px-0.5 font-phone-body text-[8px] uppercase tracking-[0.12em] text-clutch-chocolate/45">
+          <span className="flex items-center gap-1">
+            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: SENTIMENT_COLOR.good }} /> good rn
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: SENTIMENT_COLOR.notice }} /> worth noticing
+          </span>
+        </p>
       </div>
 
       {/* search / custom */}

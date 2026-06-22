@@ -7,6 +7,7 @@
 import { useSyncExternalStore } from "react";
 import { currentPhase, defaultCycleStartISO, type Phase } from "./cycle";
 import type { CuisineId } from "./cuisines";
+import type { JournalColorId } from "./journal";
 
 export type MedType = "pill" | "supplement" | "birth-control" | "prn";
 export type MedSchedule = "daily" | "specific-days" | "as-needed";
@@ -48,6 +49,7 @@ export type LogEntry = FoodLog | MedLog;
 export type ClutchState = {
   cycleStartISO: string;
   defaultCuisine: CuisineId;
+  journalColor: JournalColorId;
   meds: Med[];
   logs: LogEntry[]; // food + med, newest-first
   savedPatternIds: string[];
@@ -61,6 +63,7 @@ function freshState(): ClutchState {
   return {
     cycleStartISO: defaultCycleStartISO(),
     defaultCuisine: "indian",
+    journalColor: "rose",
     meds: [],
     logs: [],
     savedPatternIds: [],
@@ -209,6 +212,10 @@ export function setDefaultCuisine(cuisine: CuisineId) {
 
 export function setCycleStart(iso: string) {
   setState({ ...state, cycleStartISO: iso });
+}
+
+export function setJournalColor(id: JournalColorId) {
+  setState({ ...state, journalColor: id });
 }
 
 export function savePattern(id: string) {

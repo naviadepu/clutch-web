@@ -2,27 +2,19 @@
 
 import { useState } from "react";
 import { cycleDay, currentPhase, PHASES, ribbonCells } from "../../lib/cycle";
-import { setCycleStart } from "../../lib/store";
+import type { ClutchState } from "../../lib/store";
 import { PixelHeart } from "../phone/decorations";
+import CycleDrawer from "./CycleDrawer";
 
-/** the greeting + cycle ribbon. "hi, navi · day 14 · ovulating." */
-export default function CycleHeader({
-  cycleStartISO,
-}: {
-  cycleStartISO: string;
-}) {
-  const [editing, setEditing] = useState(false);
+/** the greeting + cycle ribbon. "hi, navi · day 14 · ovulating."
+ *  tapping "cycle" opens the slide-out drawer to edit it. */
+export default function CycleHeader({ state }: { state: ClutchState }) {
+  const cycleStartISO = state.cycleStartISO;
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const day = cycleDay(cycleStartISO);
   const phase = currentPhase(cycleStartISO);
   const meta = PHASES[phase];
   const cells = ribbonCells(cycleStartISO);
-
-  const startPeriodToday = () => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    setCycleStart(d.toISOString());
-    setEditing(false);
-  };
 
   return (
     <header className="px-1">
@@ -38,11 +30,14 @@ export default function CycleHeader({
           </p>
         </div>
         <button
-          onClick={() => setEditing((v) => !v)}
-          className="flex items-center gap-1 rounded-full border border-clutch-ink/15 bg-white/70 px-2.5 py-1 font-phone-body text-[9px] uppercase tracking-[0.14em] text-clutch-chocolate/70 transition-colors hover:bg-white active:scale-95"
+          onClick={() => setDrawerOpen(true)}
+          aria-label="edit your cycle"
+          className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-phone-body text-[9px] uppercase tracking-[0.14em] transition-colors active:scale-95"
+          style={{ borderColor: meta.color, color: meta.color, backgroundColor: meta.soft }}
         >
           <PixelHeart size={8} color={meta.color} />
-          cycle
+          edit cycle
+          <span aria-hidden className="opacity-60">›</span>
         </button>
       </div>
 
@@ -62,34 +57,7 @@ export default function CycleHeader({
         ))}
       </div>
 
-      {editing && (
-        <div className="animate-fadeIn mt-3 rounded-lg border border-clutch-ink/15 bg-white/80 p-3">
-          <p className="font-phone-body text-[10px] text-clutch-chocolate/80">
-            when did your last period start? we&apos;ll stamp every log with the
-            right phase.
-          </p>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <button
-              onClick={startPeriodToday}
-              className="rounded-full bg-clutch-hot px-3 py-1.5 font-phone-body text-[10px] uppercase tracking-[0.12em] text-white active:scale-95"
-            >
-              ♥ today
-            </button>
-            <input
-              type="date"
-              max={new Date().toISOString().slice(0, 10)}
-              defaultValue={cycleStartISO.slice(0, 10)}
-              onChange={(e) => {
-                if (!e.target.value) return;
-                const d = new Date(e.target.value);
-                d.setHours(0, 0, 0, 0);
-                setCycleStart(d.toISOString());
-              }}
-              className="rounded-md border border-clutch-ink/20 bg-white px-2 py-1 font-phone-body text-[10px] text-clutch-chocolate"
-            />
-          </div>
-        </div>
-      )}
+      {drawerOpen && <CycleDrawer state={state} onClose={() => setDrawerOpen(false)} />}
     </header>
   );
 }

@@ -2,17 +2,23 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { hydrate, useClutch, dismissSavePrompt } from "./lib/store";
+import { motion } from "framer-motion";
+import { hydrate, useClutch, dismissSavePrompt, setJournalColor } from "./lib/store";
 import { computePattern } from "./lib/patterns";
 import CycleHeader from "./components/app/CycleHeader";
-import LogFeed from "./components/app/LogFeed";
+import BookView from "./components/app/BookView";
 import PatternCard from "./components/app/PatternCard";
 import LogSheet from "./components/app/LogSheet";
+import JournalCover from "./components/app/JournalCover";
 import { FourPointStar, PixelHeart } from "./components/phone/decorations";
+import { Bow } from "./components/app/scrapbook";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
+  const [opened, setOpened] = useState(false);
+  const [flipping, setFlipping] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetTab, setSheetTab] = useState<"food" | "med">("food");
   const state = useClutch();
 
   // hydrate guest data after mount — keeps SSR + first paint stable.
@@ -21,9 +27,14 @@ export default function Home() {
     setMounted(true);
   }, []);
 
+  const openSheet = (tab: "food" | "med") => {
+    setSheetTab(tab);
+    setSheetOpen(true);
+  };
+
   if (!mounted) {
     return (
-      <main className="paper-grain grid min-h-[100dvh] place-items-center">
+      <main className="bg-desk grid min-h-[100dvh] place-items-center">
         <p className="font-pinyon text-clutch-hot" style={{ fontSize: 48 }}>
           clutch
         </p>
@@ -36,7 +47,33 @@ export default function Home() {
     state.logs.length >= 2 && !state.savePromptDismissed;
 
   return (
-    <main className="paper-grain min-h-[100dvh] w-full">
+    <main className="bg-desk min-h-[100dvh] w-full">
+      {/* the closed journal — tap to flip open into your diary */}
+      {!opened && (
+        <div
+          className="bg-desk fixed inset-0 z-[70] flex items-center justify-center p-6"
+          style={{ perspective: 1500 }}
+        >
+          <motion.div
+            role="button"
+            tabIndex={0}
+            onClick={() => !flipping && setFlipping(true)}
+            onKeyDown={(e) => {
+              if ((e.key === "Enter" || e.key === " ") && !flipping) setFlipping(true);
+            }}
+            initial={{ rotateY: 0, opacity: 1 }}
+            animate={flipping ? { rotateY: -162, opacity: 0, x: -28 } : { rotateY: 0, opacity: 1 }}
+            transition={{ duration: 0.95, ease: [0.36, 0, 0.22, 1] }}
+            onAnimationComplete={() => flipping && setOpened(true)}
+            style={{ transformOrigin: "left center", transformStyle: "preserve-3d" }}
+            aria-label="open journal to log"
+            className="relative cursor-pointer outline-none"
+          >
+            <JournalCover colorId={state.journalColor} onPickColor={setJournalColor} />
+          </motion.div>
+        </div>
+      )}
+
       {/* thin orientation — so a total stranger landing here gets it */}
       <div className="border-b border-clutch-ink/10 bg-white/55 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-md items-center justify-between gap-2 px-4 py-2">
@@ -56,7 +93,7 @@ export default function Home() {
       </div>
 
       <div className="mx-auto w-full max-w-md px-4 pb-32 pt-5">
-        <CycleHeader cycleStartISO={state.cycleStartISO} />
+        <CycleHeader state={state} />
 
         {/* the connect — pattern card, once there's enough data */}
         {pattern && (
@@ -68,40 +105,24 @@ export default function Home() {
           </section>
         )}
 
-        {/* the log */}
-        <section className="mt-6">
-          <div className="mb-2.5 flex items-baseline justify-between px-1">
-            <h2 className="font-pinyon text-clutch-hot" style={{ fontSize: 24 }}>
-              your log
+        {/* the diary — a page per day */}
+        <section className="mt-7">
+          <div className="mb-1 flex items-baseline gap-2 px-1">
+            <h2 className="font-pinyon text-clutch-hot" style={{ fontSize: 30, lineHeight: 0.9 }}>
+              your diary
             </h2>
-            {state.logs.length > 0 && (
-              <span className="font-phone-body text-[9px] uppercase tracking-[0.14em] text-clutch-chocolate/50">
-                {state.logs.length} {state.logs.length === 1 ? "entry" : "entries"}
-              </span>
-            )}
+            <span className="font-phone-body text-[9px] uppercase tracking-[0.16em] text-clutch-chocolate/45">
+              flip through your days
+            </span>
           </div>
 
-          {state.logs.length === 0 ? (
-            <button
-              onClick={() => setSheetOpen(true)}
-              className="flex w-full flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-clutch-hot/50 bg-white/50 px-6 py-10 text-center transition-transform active:scale-[0.98]"
-            >
-              <FourPointStar size={26} color="#EB6E9E" className="sparkle-spin" />
-              <p className="font-phone-display text-sm italic text-clutch-ink">
-                nothing logged yet
-              </p>
-              <p className="font-phone-body text-[11px] text-clutch-chocolate/65">
-                tap the ★ to log your first meal — takes 5 seconds, no account.
-              </p>
-            </button>
-          ) : (
-            <LogFeed logs={state.logs} />
-          )}
+          <BookView state={state} onAdd={openSheet} />
         </section>
 
         {/* soft save prompt — after the dopamine, never before */}
         {showSavePrompt && (
-          <div className="animate-card-pop mt-6 flex items-center gap-3 rounded-2xl border-2 border-clutch-hot bg-clutch-softpink/40 p-3.5">
+          <div className="animate-card-pop relative mt-7 flex items-center gap-3 rounded-2xl border-2 border-clutch-hot bg-clutch-softpink/40 p-3.5">
+            <Bow size={28} className="absolute -left-2 -top-3 z-10 -rotate-12" />
             <PixelHeart size={16} className="heart-pulse shrink-0" />
             <div className="min-w-0 flex-1">
               <p className="font-phone-display text-[13px] italic text-clutch-ink">
@@ -138,7 +159,7 @@ export default function Home() {
       {/* the "+" — rose, star */}
       {!sheetOpen && (
         <button
-          onClick={() => setSheetOpen(true)}
+          onClick={() => openSheet("food")}
           aria-label="log food or meds"
           className="fab-star fixed bottom-6 right-[max(1.5rem,calc(50%-13rem))] z-40 grid h-16 w-16 place-items-center rounded-full shadow-[0_8px_24px_rgba(214,51,108,0.45)] transition-transform active:scale-90"
           style={{
@@ -153,7 +174,11 @@ export default function Home() {
       )}
 
       {sheetOpen && (
-        <LogSheet state={state} onClose={() => setSheetOpen(false)} />
+        <LogSheet
+          state={state}
+          initialTab={sheetTab}
+          onClose={() => setSheetOpen(false)}
+        />
       )}
     </main>
   );
