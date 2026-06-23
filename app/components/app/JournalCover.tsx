@@ -33,6 +33,15 @@ export default function JournalCover({
             style={{ filter }}
           />
 
+          {/* "clutch" title in the middle of the cover */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 font-pinyon text-clutch-hot"
+            style={{ fontSize: 52, textShadow: "0 1px 2px rgba(255,255,255,0.55)" }}
+          >
+            clutch
+          </span>
+
           {/* small static "tap to log" pill */}
           <div className="absolute -bottom-2.5 left-1/2 z-10 -translate-x-1/2">
             <div className="flex items-center gap-1 rounded-full border border-[#D6336C] bg-white px-2.5 py-0.5 shadow-sm">

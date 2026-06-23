@@ -132,7 +132,7 @@ export default function Home() {
             · log your food + meds, we connect the dots to your cycle.
           </p>
           <Link
-            href="/landing"
+            href="/landing-page"
             className="shrink-0 font-phone-body text-[9px] uppercase tracking-[0.12em] text-clutch-hot underline-offset-2 hover:underline"
           >
             what&apos;s this?
