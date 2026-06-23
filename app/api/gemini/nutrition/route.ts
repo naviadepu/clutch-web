@@ -11,10 +11,12 @@ export async function POST(request: Request) {
   const item = typeof body?.item === "string" ? body.item.trim() : "";
   if (!item) return NextResponse.json({ error: "item required" }, { status: 400 });
 
-  const prompt = `You are a nutritionist. Estimate nutrition for: "${item}"
+  const prompt = `You are a nutritionist. The user logged this item: "${item}"
 
-For a typical single serving, give realistic rounded integer values.
-Reply ONLY with this exact JSON object, no markdown, no backticks, no extra text:
+First, check: is this a real food or drink that a person can eat? If it is NOT food (e.g. it is an object, material, place, animal, or anything not edible), reply ONLY with this exact JSON, nothing else:
+{"error":"not_food"}
+
+If it IS food, estimate nutrition for a typical single serving and reply ONLY with this exact JSON, no markdown, no backticks, no extra text:
 {"calories":250,"protein":12,"carbs":35,"fat":8,"sugar":3,"portionGrams":200,"portionLabel":"one plate"}`;
 
   const groqRes = await fetch(GROQ_URL, {
@@ -48,6 +50,9 @@ Reply ONLY with this exact JSON object, no markdown, no backticks, no extra text
 
   try {
     const raw = JSON.parse(match[0]);
+    if (raw.error === "not_food") {
+      return NextResponse.json({ error: "not_food" }, { status: 422 });
+    }
     const nutrition = {
       calories: Math.round(Number(raw.calories)),
       protein: Math.round(Number(raw.protein)),

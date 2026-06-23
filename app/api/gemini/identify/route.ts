@@ -19,7 +19,7 @@ Estimate a portion label if possible (e.g. "one plate", "1 bowl", "2 pieces").
 Reply ONLY with this JSON, no markdown, no other text:
 {"item":"food name","portionHint":"one plate"}
 
-If no food is clearly visible: {"item":"meal","portionHint":null}`;
+If no food or drink is visible (e.g. the image shows an object, person, animal, landscape, or anything that is not edible): {"item":"__not_food__","portionHint":null}`;
 
   const groqRes = await fetch(GROQ_URL, {
     method: "POST",
@@ -57,8 +57,12 @@ If no food is clearly visible: {"item":"meal","portionHint":null}`;
 
   try {
     const result = JSON.parse(match[0]);
+    const item = typeof result.item === "string" ? result.item : "meal";
+    if (item === "__not_food__") {
+      return NextResponse.json({ notFood: true, item: "__not_food__", portionHint: null });
+    }
     return NextResponse.json({
-      item: typeof result.item === "string" ? result.item : "meal",
+      item,
       portionHint: result.portionHint ?? null,
     });
   } catch {

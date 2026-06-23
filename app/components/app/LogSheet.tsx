@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import { CUISINES, CUISINE_BY_ID, type CuisineId } from "../../lib/cuisines";
 import {
   addMed,
+  deleteLog,
   logFood,
   removeMed,
   setDefaultCuisine,
@@ -49,7 +50,7 @@ function saveCache() {
 
 // ---- ai helpers (server-routed, key never touches the client) ----------
 
-async function fetchNutrition(item: string, id: string): Promise<void> {
+async function fetchNutrition(item: string, id: string, onNotFood?: () => void): Promise<void> {
   const key = item.trim().toLowerCase();
 
   // 1. Static table — instant, covers every chip food, zero API calls
@@ -77,6 +78,11 @@ async function fetchNutrition(item: string, id: string): Promise<void> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ item }),
     });
+    if (res.status === 422) {
+      const data = await res.json().catch(() => null);
+      if (data?.error === "not_food") onNotFood?.();
+      return;
+    }
     if (!res.ok) return;
     const nutrition: NutritionInfo = await res.json();
     if (typeof nutrition.calories === "number" && nutrition.calories > 0) {
@@ -90,7 +96,7 @@ async function fetchNutrition(item: string, id: string): Promise<void> {
   }
 }
 
-async function identifyPhoto(base64: string, mimeType: string): Promise<string> {
+async function identifyPhoto(base64: string, mimeType: string): Promise<string | null> {
   try {
     const res = await fetch("/api/gemini/identify", {
       method: "POST",
@@ -99,6 +105,7 @@ async function identifyPhoto(base64: string, mimeType: string): Promise<string> 
     });
     if (!res.ok) return "meal";
     const data = await res.json();
+    if (data.notFood) return null;
     return typeof data.item === "string" ? data.item : "meal";
   } catch {
     return "meal";
@@ -351,9 +358,13 @@ function FoodTab({
     const dataURL = await fileToDataURL(file);
     const { base64, mimeType } = await compressImage(dataURL);
     const identified = await identifyPhoto(base64, mimeType);
+    setIdentifying(false);
+    if (identified === null) {
+      flash("sorry, couldn't identify that as food");
+      return;
+    }
     const entry = logFood({ cuisine: activeCuisine, item: identified, photo: dataURL });
     fetchNutrition(identified, entry.id);
-    setIdentifying(false);
     onClose();
   };
 
@@ -374,7 +385,10 @@ function FoodTab({
     const info = foodInfo(item);
     flash(`clipped ✓ ${item} · ${info.nutrients.slice(0, 2).join(" + ")}`);
     setPendingNutrition((n) => n + 1);
-    fetchNutrition(item, entry.id).finally(() =>
+    fetchNutrition(item, entry.id, () => {
+      deleteLog(entry.id);
+      flash("sorry, that doesn't look like food — try a food name");
+    }).finally(() =>
       setPendingNutrition((n) => Math.max(0, n - 1)),
     );
     setCustom("");
