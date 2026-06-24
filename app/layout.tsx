@@ -1,6 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Playfair_Display, Dancing_Script, Cormorant_Garamond, Press_Start_2P, Pinyon_Script, PT_Serif } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display, Dancing_Script, Cormorant_Garamond, Press_Start_2P, Pinyon_Script, PT_Serif, Space_Grotesk, Space_Mono } from "next/font/google";
 import "./globals.css";
+
+// riso-zine type system: Space Grotesk = display/headers/UI, Space Mono = data/food/time.
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-grotesk",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
+
+const spaceMono = Space_Mono({
+  variable: "--font-space-mono",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -69,7 +82,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${dancingScript.variable} ${cormorant.variable} ${pressStart.variable} ${pinyon.variable} ${ptSerif.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${dancingScript.variable} ${cormorant.variable} ${pressStart.variable} ${pinyon.variable} ${ptSerif.variable} ${spaceGrotesk.variable} ${spaceMono.variable} antialiased`}
       >
         {children}
       </body>

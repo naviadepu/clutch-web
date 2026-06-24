@@ -1,30 +1,47 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fff6f0;
-  --foreground: #1b1b1b;
-  /* clutch is a warm light palette — never invert for system dark mode. */
+  --background: #fbf6ec;
+  --foreground: #1b1417;
   color-scheme: light;
+
+  /* --- riso-zine palette --- */
+  --pink: #fb4e97;
+  --pink-soft: #ffb3d4;
+  --acid: #d7ff45;
+  --cream: #fbf6ec;
+  --ink: #1b1417;
+  --berry: #c8235f;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-grotesk);
+  --font-mono: var(--font-space-mono);
+  --font-serif: var(--font-grotesk);
   --font-script: var(--font-dancing);
   --font-romantic: var(--font-cormorant);
-  --color-clutch-paper: #f6efe3;
-  --color-clutch-paper-deep: #efe5d2;
-  --color-clutch-softpink: #f4c9d6;
-  --color-clutch-bubblegum: #eb6e9e;
-  --color-clutch-hot: #d6336c;
-  --color-clutch-chocolate: #4a2a1a;
-  --color-clutch-ink: #1b1b1b;
+
+  /* new riso tokens */
+  --color-pink: #fb4e97;
+  --color-pink-soft: #ffb3d4;
+  --color-acid: #d7ff45;
+  --color-cream: #fbf6ec;
+  --color-ink: #1b1417;
+  --color-berry: #c8235f;
+
+  /* clutch-* tokens remapped to the riso palette (so existing classes recolor) */
+  --color-clutch-paper: #fbf6ec;
+  --color-clutch-paper-deep: #f3e7d2;
+  --color-clutch-softpink: #ffb3d4;
+  --color-clutch-bubblegum: #ff7db0;
+  --color-clutch-hot: #fb4e97;
+  --color-clutch-chocolate: #6e5563; /* muted plum-ink for secondary text */
+  --color-clutch-ink: #1b1417;
   --color-clutch-dusty: #c9d6e2;
-  --color-clutch-cream: #fff6f0;
-  --color-clutch-mauve: #d9b8cc;
+  --color-clutch-cream: #fbf6ec;
+  --color-clutch-mauve: #9a6b8e;
 }
 
 @layer utilities {
@@ -138,16 +155,85 @@
     animation: testimonialScroll 25s linear infinite;
   }
 
+  /* font-pinyon = the clutch logo script ONLY */
   .font-pinyon {
     font-family: var(--font-pinyon), cursive;
   }
 
+  /* riso-zine type roles */
+  .font-grotesk {
+    font-family: var(--font-grotesk), "Helvetica Neue", Arial, sans-serif;
+  }
+  .font-zine-mono {
+    font-family: var(--font-space-mono), ui-monospace, monospace;
+  }
+
+  /* legacy aliases remapped: display→Space Grotesk, body/meta→Space Mono */
   .font-phone-display {
-    font-family: var(--font-playfair), Georgia, serif;
+    font-family: var(--font-grotesk), "Helvetica Neue", Arial, sans-serif;
   }
 
   .font-phone-body {
-    font-family: var(--font-pt-serif), Georgia, serif;
+    font-family: var(--font-space-mono), ui-monospace, monospace;
+  }
+
+  /* ===== riso texture system ===== */
+
+  /* halftone dot grid — the base print texture (ref 2) */
+  .tex-halftone {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.5) 22%, transparent 24%);
+    background-size: 7px 7px;
+  }
+  .tex-halftone-ink {
+    background-image: radial-gradient(rgba(27, 20, 23, 0.16) 22%, transparent 24%);
+    background-size: 7px 7px;
+  }
+  .tex-halftone-acid {
+    background-image: radial-gradient(rgba(215, 255, 69, 0.85) 26%, transparent 28%);
+    background-size: 10px 10px;
+  }
+
+  /* grayscale film grain — drop as a full-bleed overlay div, pointer-events-none */
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.12;
+    mix-blend-mode: multiply;
+  }
+
+  /* duotone pink wash (ref 5) — a printed pink field */
+  .bg-riso-pink {
+    background-color: #fb4e97;
+    background-image:
+      radial-gradient(120% 90% at 25% 10%, rgba(255, 179, 212, 0.8), transparent 55%),
+      radial-gradient(120% 90% at 85% 80%, rgba(200, 35, 95, 0.45), transparent 55%);
+  }
+  .bg-riso-soft {
+    background-color: #ffb3d4;
+    background-image: radial-gradient(120% 100% at 30% 0%, rgba(255, 255, 255, 0.55), transparent 60%);
+  }
+
+  /* cream paper with faint grain feel */
+  .bg-cream-grain {
+    background-color: #fbf6ec;
+    background-image: radial-gradient(rgba(27, 20, 23, 0.045) 30%, transparent 31%);
+    background-size: 6px 6px;
+  }
+
+  /* riso binding stripes (pink / cream / acid) */
+  .riso-stripes {
+    background-color: #fbf6ec;
+    background-image: repeating-linear-gradient(
+      90deg,
+      #fb4e97 0 7px,
+      #fbf6ec 7px 12px,
+      #d7ff45 12px 14px,
+      #fbf6ec 14px 20px
+    );
+  }
+
+  /* hard-edged printed pill / sticker */
+  .riso-edge {
+    box-shadow: 2px 2px 0 #1b1417;
   }
 
   .halftone {

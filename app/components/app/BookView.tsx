@@ -8,7 +8,6 @@
 import { forwardRef, useCallback, useMemo, useRef, useState } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { currentPhase, PHASES } from "../../lib/cycle";
-import { foodInfo, SENTIMENT_COLOR } from "../../lib/foodInfo";
 import {
   deleteLog,
   type ClutchState,
@@ -16,9 +15,7 @@ import {
   type LogEntry,
   type MedLog,
 } from "../../lib/store";
-import KawaiiFood from "./KawaiiFood";
 import { PhaseChip } from "./shared";
-import { FourPointStar } from "../phone/decorations";
 
 const FlipBook = HTMLFlipBook as unknown as React.ComponentType<Record<string, unknown>>;
 
@@ -44,13 +41,14 @@ function timeLabel(ts: number) {
   return new Date(ts).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }).toLowerCase().replace(" ", "");
 }
 
-// ---- content rows (your existing layout) ----
-function MealRow({ entry }: { entry: FoodLog }) {
-  const info = foodInfo(entry.item);
+// ---- tracklist rows: a meal/med is a track (ref: mono mixtape liner) ----
+function pad(n: number) {
+  return String(n).padStart(2, "0");
+}
+
+function MealRow({ entry, idx }: { entry: FoodLog; idx: number }) {
   const [expanded, setExpanded] = useState(false);
   const n = entry.nutrition;
-  // tap a meal (with nutrition) to expand macros; stopPropagation keeps the
-  // tap from bubbling up and flipping the page.
   const toggle = useCallback(
     (e: React.MouseEvent) => {
       if (!n) return;
@@ -62,62 +60,59 @@ function MealRow({ entry }: { entry: FoodLog }) {
   return (
     <>
       <li
-        className={`group flex items-center gap-1.5 py-[3px] ${n ? "cursor-pointer select-none" : ""}`}
+        className={`group flex items-baseline gap-2 py-[2.5px] font-zine-mono text-[12px] uppercase leading-tight text-clutch-ink ${n ? "cursor-pointer select-none" : ""}`}
         onClick={toggle}
       >
-        <KawaiiFood item={entry.item} size={26} className="shrink-0" />
-        <span className="min-w-0 flex-1 truncate font-pinyon leading-none text-clutch-hot" style={{ fontSize: 19 }}>{entry.item}</span>
-        {n?.calories != null && (
-          <span className="shrink-0 font-phone-body text-[8px] text-clutch-chocolate/40">{n.calories}</span>
-        )}
-        <span aria-hidden className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: SENTIMENT_COLOR[info.sentiment] }} />
-        <button onClick={(e) => { e.stopPropagation(); deleteLog(entry.id); }} aria-label="remove" className="shrink-0 font-phone-body text-[9px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100">✕</button>
+        <span className="shrink-0 tabular-nums text-clutch-hot">{pad(idx)}</span>
+        <span className="min-w-0 flex-1 truncate">{entry.item}</span>
+        {n?.calories != null && <span className="shrink-0 tabular-nums text-clutch-chocolate/40">{n.calories}</span>}
+        <span className="shrink-0 tabular-nums text-clutch-chocolate/55">{timeLabel(entry.ts)}</span>
+        <button onClick={(e) => { e.stopPropagation(); deleteLog(entry.id); }} aria-label="remove" className="shrink-0 text-[10px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100">✕</button>
       </li>
       {expanded && n && (
-        <li className="pb-1 pl-[29px]">
-          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 font-phone-body text-[7.5px] text-clutch-chocolate/50">
-            <span><span className="text-clutch-hot/70">{n.calories}</span> kcal</span>
-            <span><span className="text-clutch-hot/70">{n.protein}g</span> prot</span>
-            <span><span className="text-clutch-hot/70">{n.carbs}g</span> carb</span>
-            <span><span className="text-clutch-hot/70">{n.fat}g</span> fat</span>
-            {n.sugar > 0 && <span><span className="text-clutch-hot/70">{n.sugar}g</span> sugar</span>}
-          </div>
-          <p className="mt-0.5 font-phone-body text-[7px] italic text-clutch-chocolate/30">{n.portionLabel}</p>
+        <li className="grid grid-cols-2 gap-x-3 gap-y-0.5 pb-1 pl-7 font-zine-mono text-[8px] uppercase text-clutch-chocolate/55">
+          <span><span className="text-clutch-hot">{n.calories}</span> KCAL</span>
+          <span><span className="text-clutch-hot">{n.protein}G</span> PROT</span>
+          <span><span className="text-clutch-hot">{n.carbs}G</span> CARB</span>
+          <span><span className="text-clutch-hot">{n.fat}G</span> FAT</span>
+          {n.sugar > 0 && <span><span className="text-clutch-hot">{n.sugar}G</span> SUGAR</span>}
         </li>
       )}
     </>
   );
 }
-function MedRow({ entry }: { entry: MedLog }) {
+function MedRow({ entry, idx }: { entry: MedLog; idx: number }) {
   return (
-    <li className="group flex items-center gap-1.5 py-[3px]">
-      <span aria-hidden className="grid h-[26px] w-[26px] shrink-0 place-items-center rounded-full text-[13px]" style={{ backgroundColor: entry.isBirthControl ? "#E7D6EC" : "#FBE4D6" }}>{entry.isBirthControl ? "🌸" : "💊"}</span>
-      <span className="min-w-0 flex-1 truncate font-pinyon leading-none text-clutch-hot" style={{ fontSize: 19 }}>{entry.name}</span>
-      <span className="shrink-0 font-phone-body text-[7px] uppercase tracking-wide text-clutch-chocolate/40">{timeLabel(entry.ts)}</span>
-      <button onClick={() => deleteLog(entry.id)} aria-label="remove" className="shrink-0 font-phone-body text-[9px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100">✕</button>
+    <li className="group flex items-baseline gap-2 py-[2.5px] font-zine-mono text-[12px] uppercase leading-tight text-clutch-ink">
+      <span className="shrink-0 tabular-nums text-clutch-hot">{pad(idx)}</span>
+      <span className="min-w-0 flex-1 truncate">
+        {entry.name}
+        {entry.isBirthControl && <span className="text-clutch-mauve"> · BC</span>}
+      </span>
+      <span className="shrink-0 tabular-nums text-clutch-chocolate/55">{timeLabel(entry.ts)}</span>
+      <button onClick={() => deleteLog(entry.id)} aria-label="remove" className="shrink-0 text-[10px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100">✕</button>
     </li>
   );
 }
 function GhostAdd({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <li>
-      <button onClick={onClick} className="flex w-full items-center gap-1 py-[3px] text-left font-phone-display text-[10px] italic text-clutch-chocolate/40 hover:text-clutch-hot">
-        <span className="grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border border-dashed border-current text-[9px]">+</span>
-        {label}
+      <button onClick={onClick} className="flex w-full items-baseline gap-2 py-[2.5px] text-left font-zine-mono text-[11px] uppercase tracking-tight text-clutch-chocolate/40 transition-colors hover:text-clutch-hot">
+        <span className="shrink-0">+</span> {label}
       </button>
     </li>
   );
 }
 
-// one physical page. forwardRef so StPageFlip can drive the curl. cream paper =
-// the real page.png crop; the spine edge gets a soft shadow.
+// one physical page — cream paper with a faint grain print (no photo).
 const Page = forwardRef<HTMLDivElement, { side: "left" | "right"; children: React.ReactNode }>(
   function Page({ side, children }, ref) {
     return (
-      <div ref={ref} className="overflow-hidden bg-[#FFFDF7]" style={{ backgroundImage: "url(/images/journal/page.png)", backgroundSize: "cover", backgroundPosition: side === "left" ? "left" : "right" }}>
+      <div ref={ref} className="bg-cream-grain overflow-hidden">
         <div className="relative h-full w-full px-3.5 py-3">
-          <div aria-hidden className={`pointer-events-none absolute inset-y-0 w-5 ${side === "left" ? "right-0 bg-gradient-to-l" : "left-0 bg-gradient-to-r"} from-black/12 to-transparent`} />
-          {children}
+          <div aria-hidden className="grain pointer-events-none absolute inset-0" />
+          <div aria-hidden className={`pointer-events-none absolute inset-y-0 w-5 ${side === "left" ? "right-0 bg-gradient-to-l" : "left-0 bg-gradient-to-r"} from-black/10 to-transparent`} />
+          <div className="relative">{children}</div>
         </div>
       </div>
     );
@@ -168,7 +163,9 @@ export default function BookView({ state, onAdd }: { state: ClutchState; onAdd: 
 
   // build 2 pages per day
   const pageEls: React.ReactNode[] = [];
+  let di = -1;
   for (const d of days) {
+    di += 1;
     const phase = currentPhase(state.cycleStartISO, d.ts);
     const meta = PHASES[phase];
     const meals = [...d.entry.meals].sort((a, b) => a.ts - b.ts);
@@ -176,53 +173,70 @@ export default function BookView({ state, onAdd }: { state: ClutchState; onAdd: 
     const totalCals = meals.reduce((sum, f) => sum + (f.nutrition?.calories ?? 0), 0);
     pageEls.push(
       <Page key={`${d.key}-L`} side="left">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="flex items-center gap-1 font-pinyon text-clutch-hot" style={{ fontSize: 26, lineHeight: 0.85 }}>
-              {d.isToday && <FourPointStar size={11} color={meta.color} className="sparkle-spin" />}
-              {heading(d.ts, todayKey)}
-            </p>
-            <p className="mt-0.5 font-phone-body text-[8px] uppercase tracking-[0.14em] text-clutch-chocolate/60">{dateStamp(d.ts)} · {meta.state}</p>
+        <div className="flex h-full flex-col">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="font-grotesk font-bold lowercase leading-none tracking-tight text-clutch-ink" style={{ fontSize: 30 }}>
+                {heading(d.ts, todayKey)}
+              </p>
+              <p className="mt-1 font-phone-body text-[8px] uppercase tracking-[0.16em] text-clutch-chocolate/60">{dateStamp(d.ts)} · {meta.state}</p>
+            </div>
+            <PhaseChip phase={phase} size="sm" />
           </div>
-          <PhaseChip phase={phase} size="sm" />
+
+          <div className="mt-2 mb-1 flex items-baseline justify-between border-b-2 border-clutch-ink/80 pb-0.5">
+            <span className="font-grotesk text-[13px] font-bold uppercase tracking-tight text-clutch-ink">meals</span>
+            <span className="font-phone-body text-[8px] uppercase text-clutch-chocolate/45">[{pad(meals.length)}]</span>
+          </div>
+          <ul className="min-h-0 flex-1 overflow-y-auto pr-0.5">
+            {meals.map((f, i) => <MealRow key={f.id} entry={f} idx={i + 1} />)}
+            {d.isToday && <GhostAdd label="add a meal" onClick={() => onAdd("food")} />}
+            {!d.isToday && meals.length === 0 && <li className="py-0.5 font-phone-body text-[9px] uppercase tracking-wide text-clutch-chocolate/30">— nothing logged —</li>}
+          </ul>
+
+          <div className="mt-1 flex items-center justify-between border-t border-clutch-ink/15 pt-1 font-phone-body text-[7px] uppercase tracking-[0.14em] text-clutch-chocolate/40">
+            <span>clutch.log</span>
+            {totalCals > 0 ? <span className="text-clutch-hot">{totalCals} kcal</span> : <span>★ ★ ★</span>}
+          </div>
         </div>
-        <div className="my-1.5 h-px bg-clutch-ink/10" />
-        <p className="mb-0.5 flex items-center gap-1 font-pinyon leading-none" style={{ fontSize: 19, color: meta.color }}>
-          <FourPointStar size={9} color={meta.color} /> meals
-        </p>
-        <ul className="max-h-[64%] overflow-y-auto pr-0.5">
-          {meals.map((f) => <MealRow key={f.id} entry={f} />)}
-          {d.isToday && <GhostAdd label="add a meal…" onClick={() => onAdd("food")} />}
-          {!d.isToday && meals.length === 0 && <li className="py-0.5 font-phone-display text-[10px] italic text-clutch-chocolate/35">nothing here.</li>}
-        </ul>
-        {totalCals > 0 && (
-          <p className="mt-0.5 px-0.5 font-phone-body text-[7px] text-clutch-chocolate/35">{totalCals} kcal total</p>
-        )}
       </Page>,
     );
     pageEls.push(
       <Page key={`${d.key}-R`} side="right">
-        <p className="mb-1 mt-6 flex items-center gap-1 font-pinyon leading-none" style={{ fontSize: 19, color: meta.color }}>
-          <FourPointStar size={9} color={meta.color} /> meds
-        </p>
-        <ul className="max-h-[72%] overflow-y-auto pr-0.5">
-          {meds.map((m) => <MedRow key={m.id} entry={m} />)}
-          {d.isToday && <GhostAdd label="add a med…" onClick={() => onAdd("med")} />}
-          {!d.isToday && meds.length === 0 && <li className="py-0.5 font-phone-display text-[10px] italic text-clutch-chocolate/35">none taken.</li>}
-        </ul>
+        <div className="flex h-full flex-col">
+          <div className="mb-1 flex items-baseline justify-between border-b-2 border-clutch-ink/80 pb-0.5">
+            <span className="font-grotesk text-[13px] font-bold uppercase tracking-tight text-clutch-ink">meds</span>
+            <span className="font-phone-body text-[8px] uppercase text-clutch-chocolate/45">[{pad(meds.length)}]</span>
+          </div>
+          <ul className="min-h-0 flex-1 overflow-y-auto pr-0.5">
+            {meds.map((m, i) => <MedRow key={m.id} entry={m} idx={i + 1} />)}
+            {d.isToday && <GhostAdd label="add a med" onClick={() => onAdd("med")} />}
+            {!d.isToday && meds.length === 0 && <li className="py-0.5 font-phone-body text-[9px] uppercase tracking-wide text-clutch-chocolate/30">— none taken —</li>}
+          </ul>
+          <div className="mt-1 flex items-center justify-between border-t border-clutch-ink/15 pt-1 font-phone-body text-[7px] uppercase tracking-[0.14em] text-clutch-chocolate/40">
+            <span>epi.to.me</span>
+            <span>{pad(di + 1)} / {pad(days.length)}</span>
+          </div>
+        </div>
       </Page>,
     );
   }
 
   return (
-    <div
-      className="relative rounded-2xl border border-clutch-ink/10 px-3 pb-4 pt-4 shadow-inner"
-      style={{ backgroundImage: "url(/images/journal/stripes.png)", backgroundSize: "100% auto", backgroundRepeat: "repeat-y" }}
-    >
+    <div className="bg-riso-pink relative overflow-hidden rounded-[4px] border-2 border-clutch-ink px-3 pb-3 pt-7 riso-edge">
+      <div aria-hidden className="grain pointer-events-none absolute inset-0" />
+      {/* editorial corner stamps */}
+      <div className="pointer-events-none absolute left-3 top-2 font-phone-body text-[8px] uppercase tracking-[0.18em] text-clutch-cream">
+        clutch · diary
+      </div>
+      <div className="pointer-events-none absolute right-3 top-2 font-phone-body text-[8px] uppercase tracking-[0.18em] text-clutch-cream">
+        vol.04 / 10
+      </div>
+
       <div
-        className="mx-auto"
+        className="relative mx-auto w-full max-w-[420px]"
         onClick={onTapFlip}
-        style={{ width: "min(94vw, 440px)", filter: "drop-shadow(3px 5px 0 #EADBC4) drop-shadow(6px 9px 0 rgba(210,180,140,0.4))" }}
+        style={{ filter: "drop-shadow(3px 5px 0 rgba(27,20,23,0.9))" }}
       >
         <FlipBook
           ref={bookRef}
@@ -246,8 +260,8 @@ export default function BookView({ state, onAdd }: { state: ClutchState; onAdd: 
           {pageEls}
         </FlipBook>
       </div>
-      <p className="mt-2 text-center font-phone-body text-[8px] uppercase tracking-[0.16em] text-clutch-chocolate/45">
-        tap left / right to flip the page
+      <p className="relative mt-2.5 text-center font-phone-body text-[8px] uppercase tracking-[0.2em] text-clutch-cream">
+        ‹ tap to flip the page ›
       </p>
     </div>
   );

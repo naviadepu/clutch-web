@@ -166,22 +166,22 @@ export default function LogSheet({
       />
 
       {/* sheet */}
-      <div className="animate-sheet-up paper-grain relative max-h-[88vh] w-full overflow-y-auto rounded-t-3xl border-t-2 border-clutch-hot pb-[max(env(safe-area-inset-bottom),16px)] shadow-[0_-8px_40px_rgba(214,51,108,0.18)]">
+      <div className="animate-sheet-up bg-cream-grain relative max-h-[88vh] w-full overflow-y-auto rounded-t-[4px] border-t-2 border-clutch-ink pb-[max(env(safe-area-inset-bottom),16px)] shadow-[0_-6px_0_rgba(27,20,23,0.9)]">
         <div className="mx-auto w-full max-w-md px-4 pt-3">
           {/* grabber */}
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-clutch-ink/15" />
+          <div className="mx-auto mb-3 h-1 w-10 bg-clutch-ink/30" />
 
           {/* tabs */}
           <div className="flex items-center gap-2">
-            <SheetTab active={tab === "food"} onClick={() => setTab("food")} emoji="🍛">
+            <SheetTab active={tab === "food"} onClick={() => setTab("food")}>
               log food
             </SheetTab>
-            <SheetTab active={tab === "med"} onClick={() => setTab("med")} emoji="💊">
+            <SheetTab active={tab === "med"} onClick={() => setTab("med")}>
               log med
             </SheetTab>
             <button
               onClick={onClose}
-              className="ml-auto rounded-full px-2 py-1 font-phone-body text-[11px] text-clutch-chocolate/50 hover:text-clutch-hot"
+              className="ml-auto font-phone-body text-[10px] font-bold uppercase tracking-[0.1em] text-clutch-ink/45 hover:text-clutch-ink"
             >
               done
             </button>
@@ -217,24 +217,21 @@ export default function LogSheet({
 function SheetTab({
   active,
   onClick,
-  emoji,
   children,
 }: {
   active: boolean;
   onClick: () => void;
-  emoji: string;
   children: React.ReactNode;
 }) {
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1.5 rounded-full border-2 px-3.5 py-1.5 font-phone-body text-[11px] uppercase tracking-[0.1em] transition-all active:scale-95 ${
+      className={`border-2 px-3 py-1.5 font-phone-body text-[11px] font-bold uppercase tracking-[0.1em] transition-all active:scale-95 ${
         active
-          ? "border-clutch-hot bg-clutch-hot text-white"
-          : "border-clutch-ink/15 bg-white/70 text-clutch-chocolate/70"
+          ? "border-clutch-ink bg-clutch-ink text-clutch-cream"
+          : "border-clutch-ink/25 bg-clutch-cream text-clutch-ink/55"
       }`}
     >
-      <span aria-hidden>{emoji}</span>
       {children}
     </button>
   );
@@ -403,14 +400,12 @@ function FoodTab({
       <button
         onClick={() => !identifying && cameraRef.current?.click()}
         disabled={identifying}
-        className={`flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-clutch-hot py-4 font-phone-display text-sm italic transition-transform ${
-          identifying
-            ? "bg-clutch-softpink/60 text-clutch-hot/70"
-            : "bg-clutch-softpink/40 text-clutch-hot active:scale-[0.98]"
+        className={`riso-edge flex items-center justify-center gap-2 border-2 border-clutch-ink py-3.5 font-phone-body text-[11px] font-bold uppercase tracking-[0.12em] transition-transform ${
+          identifying ? "bg-clutch-cream text-clutch-ink/60" : "bg-pink text-clutch-cream active:scale-[0.98]"
         }`}
       >
-        <span className="text-xl">{identifying ? "⏳" : "📷"}</span>
-        {identifying ? "identifying your meal…" : "snap a pic — ai identifies the food"}
+        <span className="text-base">{identifying ? "⏳" : "📷"}</span>
+        {identifying ? "identifying…" : "snap a pic · ai reads it"}
       </button>
       <input
         ref={cameraRef}
@@ -423,8 +418,8 @@ function FoodTab({
 
       {/* cuisine pack selector */}
       <div>
-        <p className="mb-2 font-phone-body text-[10px] uppercase tracking-[0.16em] text-clutch-chocolate/55">
-          quick chips · your cuisine
+        <p className="mb-2 font-phone-body text-[9px] font-bold uppercase tracking-[0.18em] text-clutch-ink/55">
+          quick chips · cuisine
         </p>
         <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
           {ordered.map((c) => {
@@ -436,13 +431,12 @@ function FoodTab({
                   setActiveCuisine(c.id);
                   setDefaultCuisine(c.id);
                 }}
-                className={`flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 font-phone-body text-[10px] lowercase tracking-wide transition-colors ${
+                className={`shrink-0 border-2 px-2 py-1 font-phone-body text-[9px] font-bold uppercase tracking-wide transition-colors ${
                   active
-                    ? "border-clutch-hot bg-clutch-hot/10 text-clutch-hot"
-                    : "border-clutch-ink/15 bg-white/70 text-clutch-chocolate/65"
+                    ? "border-clutch-ink bg-clutch-ink text-clutch-cream"
+                    : "border-clutch-ink/25 bg-clutch-cream text-clutch-ink/55"
                 }`}
               >
-                <span aria-hidden>{c.emoji}</span>
                 {c.label}
               </button>
             );
@@ -455,30 +449,26 @@ function FoodTab({
             <button
               key={item}
               onClick={() => logChip(item)}
-              className="flex items-center gap-1.5 rounded-full border border-clutch-ink/15 bg-white px-3 py-1.5 font-phone-display text-[12px] italic text-clutch-ink transition-all hover:border-clutch-hot hover:text-clutch-hot active:scale-90"
+              className="flex items-center gap-1.5 border-2 border-clutch-ink/30 bg-clutch-cream px-2.5 py-1 font-phone-body text-[11px] uppercase tracking-tight text-clutch-ink transition-all hover:border-clutch-ink hover:bg-pink hover:text-clutch-cream active:scale-90"
             >
-              <span
-                aria-hidden
-                className="h-1.5 w-1.5 rounded-full"
-                style={{ backgroundColor: SENTIMENT_COLOR[foodInfo(item).sentiment] }}
-              />
+              <span aria-hidden className="h-1.5 w-1.5" style={{ backgroundColor: SENTIMENT_COLOR[foodInfo(item).sentiment] }} />
               {item}
             </button>
           ))}
         </div>
-        <p className="mt-1.5 flex items-center gap-2 px-0.5 font-phone-body text-[8px] uppercase tracking-[0.12em] text-clutch-chocolate/45">
+        <p className="mt-1.5 flex items-center gap-2 px-0.5 font-phone-body text-[8px] uppercase tracking-[0.1em] text-clutch-ink/45">
           <span className="flex items-center gap-1">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: SENTIMENT_COLOR.good }} /> good rn
+            <span className="h-1.5 w-1.5" style={{ backgroundColor: SENTIMENT_COLOR.good }} /> good rn
           </span>
           <span className="flex items-center gap-1">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: SENTIMENT_COLOR.notice }} /> worth noticing
+            <span className="h-1.5 w-1.5" style={{ backgroundColor: SENTIMENT_COLOR.notice }} /> worth noticing
           </span>
         </p>
       </div>
 
       {/* search / custom */}
       <div>
-        <p className="mb-2 font-phone-body text-[10px] uppercase tracking-[0.16em] text-clutch-chocolate/55">
+        <p className="mb-2 font-phone-body text-[9px] font-bold uppercase tracking-[0.18em] text-clutch-ink/55">
           something else
         </p>
         <div className="flex gap-2">
@@ -486,12 +476,12 @@ function FoodTab({
             value={custom}
             onChange={(e) => setCustom(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && logCustom()}
-            placeholder="type a food…"
-            className="min-w-0 flex-1 rounded-full border border-clutch-ink/20 bg-white px-3.5 py-2 font-phone-display text-[13px] italic text-clutch-ink placeholder:not-italic placeholder:text-clutch-chocolate/40 focus:border-clutch-hot focus:outline-none"
+            placeholder="TYPE A FOOD"
+            className="min-w-0 flex-1 border-2 border-clutch-ink bg-white px-3 py-2 font-phone-body text-[12px] uppercase tracking-wide text-clutch-ink placeholder:text-clutch-ink/30 focus:outline-none"
           />
           <button
             onClick={logCustom}
-            className="shrink-0 rounded-full bg-clutch-hot px-4 py-2 font-phone-body text-[11px] uppercase tracking-[0.1em] text-white active:scale-95"
+            className="riso-edge shrink-0 border-2 border-clutch-ink bg-pink px-4 py-2 font-phone-body text-[11px] font-bold uppercase tracking-[0.1em] text-clutch-cream active:scale-95"
           >
             log
           </button>
@@ -525,32 +515,32 @@ function MedTab({ state, flash }: { state: ClutchState; flash: (m: string) => vo
             {state.meds.map((med) => (
               <div
                 key={med.id}
-                className="group flex items-center gap-3 rounded-xl border border-clutch-ink/12 bg-white/80 p-2.5"
+                className="group flex items-center gap-3 border-2 border-clutch-ink/20 bg-clutch-cream p-2.5"
               >
                 <span
                   aria-hidden
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-lg"
-                  style={{ backgroundColor: med.isBirthControl ? "#E7D6EC" : "#FBE4D6" }}
+                  className="grid h-9 w-9 shrink-0 place-items-center border-2 border-clutch-ink/20 text-base"
+                  style={{ backgroundColor: med.isBirthControl ? "#E2D0DD" : "#FFD0E4" }}
                 >
                   {med.isBirthControl ? "🌸" : "💊"}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-phone-display text-[13px] italic text-clutch-ink">
+                  <p className="truncate font-phone-body text-[12px] font-bold uppercase text-clutch-ink">
                     {med.name}
                     {med.isBirthControl && (
-                      <span className="ml-1.5 rounded-full bg-clutch-mauve/30 px-1.5 py-0.5 align-middle font-phone-body text-[8px] not-italic uppercase tracking-[0.1em] text-clutch-chocolate/70">
-                        birth control
+                      <span className="ml-1.5 align-middle font-phone-body text-[8px] font-normal uppercase tracking-[0.1em] text-clutch-ink/45">
+                        · bc
                       </span>
                     )}
                   </p>
-                  <p className="font-phone-body text-[9px] text-clutch-chocolate/55">
+                  <p className="font-phone-body text-[8px] uppercase tracking-wide text-clutch-ink/45">
                     {[med.dose, med.schedule.replace("-", " ")].filter(Boolean).join(" · ")}
                   </p>
                 </div>
                 <button
                   onClick={() => removeMed(med.id)}
                   aria-label="remove med"
-                  className="rounded-full px-1.5 py-1 font-phone-body text-[11px] text-clutch-chocolate/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100"
+                  className="font-phone-body text-[11px] text-clutch-ink/25 opacity-0 hover:text-clutch-hot group-hover:opacity-100"
                 >
                   ✕
                 </button>
@@ -559,7 +549,7 @@ function MedTab({ state, flash }: { state: ClutchState; flash: (m: string) => vo
                     takeMed(med.id);
                     flash(`taken ✓ ${med.name}`);
                   }}
-                  className="shrink-0 rounded-full bg-clutch-hot px-3.5 py-2 font-phone-body text-[10px] uppercase tracking-[0.1em] text-white active:scale-95"
+                  className="riso-edge shrink-0 border-2 border-clutch-ink bg-pink px-3 py-1.5 font-phone-body text-[10px] font-bold uppercase tracking-[0.1em] text-clutch-cream active:scale-95"
                 >
                   take
                 </button>
@@ -577,7 +567,7 @@ function MedTab({ state, flash }: { state: ClutchState; flash: (m: string) => vo
       ) : (
         <button
           onClick={() => setAdding(true)}
-          className="rounded-2xl border-2 border-dashed border-clutch-hot bg-clutch-softpink/30 py-3 font-phone-display text-sm italic text-clutch-hot active:scale-[0.98]"
+          className="riso-edge border-2 border-clutch-ink bg-clutch-cream py-2.5 font-phone-body text-[11px] font-bold uppercase tracking-[0.12em] text-clutch-ink active:scale-[0.98]"
         >
           + add a new med
         </button>

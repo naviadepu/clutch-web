@@ -34,27 +34,15 @@ export function PhaseChip({
   size?: "sm" | "md";
 }) {
   const meta = PHASES[phase];
-  const isOv = phase === "ovulation";
   return (
     <span
-      className={`relative inline-flex items-center gap-1 overflow-hidden rounded-full border font-phone-body uppercase tracking-[0.14em] ${
-        size === "sm" ? "px-2 py-0.5 text-[8px]" : "px-2.5 py-1 text-[9px]"
+      className={`inline-flex items-center gap-1 border-2 font-phone-body font-bold uppercase tracking-[0.12em] text-clutch-cream ${
+        size === "sm" ? "px-1.5 py-0.5 text-[8px]" : "px-2 py-0.5 text-[9px]"
       }`}
-      style={{
-        color: meta.color,
-        borderColor: meta.color,
-        backgroundColor: meta.soft,
-      }}
+      style={{ backgroundColor: meta.color, borderColor: "#1B1417" }}
     >
-      {isOv && (
-        <span aria-hidden className="shimmer-gold pointer-events-none absolute inset-0" />
-      )}
-      <span
-        aria-hidden
-        className="relative h-1.5 w-1.5 shrink-0 rounded-full"
-        style={{ backgroundColor: meta.color }}
-      />
-      <span className="relative">{meta.label}</span>
+      <span aria-hidden className="h-1.5 w-1.5 bg-clutch-cream" />
+      {meta.label}
     </span>
   );
 }

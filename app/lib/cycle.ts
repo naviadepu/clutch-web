@@ -22,36 +22,36 @@ export const PHASES: Record<Phase, PhaseMeta> = {
     id: "menstrual",
     label: "menstrual",
     state: "on your period",
-    color: "#D6336C", // deep rose
-    soft: "#FBD9E4",
-    dot: "#D6336C",
+    color: "#C8235F", // berry
+    soft: "#F7C9DC",
+    dot: "#C8235F",
     blurb: "rest is productive. be soft with yourself.",
   },
   follicular: {
     id: "follicular",
     label: "follicular",
     state: "in your follicular phase",
-    color: "#F19A6E", // peach
-    soft: "#FBE4D6",
-    dot: "#F19A6E",
+    color: "#FB4E97", // pink
+    soft: "#FFD0E4",
+    dot: "#FB4E97",
     blurb: "energy's climbing. good week to start things.",
   },
   ovulation: {
     id: "ovulation",
     label: "ovulation",
     state: "ovulating",
-    color: "#E8A33D", // pink-gold / shimmer
-    soft: "#FBE9C9",
-    dot: "#E8A33D",
+    color: "#E7B53C", // warm gold
+    soft: "#F7E7BE",
+    dot: "#E7B53C",
     blurb: "peak shimmer. you feel it, don't you.",
   },
   luteal: {
     id: "luteal",
     label: "luteal",
     state: "in your luteal phase",
-    color: "#A77BB0", // lavender / mauve
-    soft: "#E7D6EC",
-    dot: "#A77BB0",
+    color: "#9A6B8E", // luteal plum
+    soft: "#E2D0DD",
+    dot: "#9A6B8E",
     blurb: "wind-down week. cravings + feelings are valid.",
   },
 };

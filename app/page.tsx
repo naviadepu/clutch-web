@@ -12,8 +12,7 @@ const BookView = dynamic(() => import("./components/app/BookView"), { ssr: false
 import PatternCard from "./components/app/PatternCard";
 import LogSheet from "./components/app/LogSheet";
 import JournalCover from "./components/app/JournalCover";
-import { FourPointStar, PixelHeart } from "./components/phone/decorations";
-import { Bow } from "./components/app/scrapbook";
+import { FourPointStar } from "./components/phone/decorations";
 
 function NamePrompt() {
   const [name, setName] = useState("");
@@ -28,10 +27,10 @@ function NamePrompt() {
       exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.2 } }}
     >
       <div className="w-full max-w-[280px] px-2 text-center">
-        <p className="font-pinyon text-clutch-hot" style={{ fontSize: 46, lineHeight: 0.9 }}>
+        <p className="font-grotesk font-bold lowercase leading-none tracking-tight text-clutch-ink" style={{ fontSize: 44 }}>
           hi, you.
         </p>
-        <p className="mt-3 font-phone-body text-[10px] uppercase tracking-[0.18em] text-clutch-chocolate/55">
+        <p className="mt-3 font-phone-body text-[10px] font-bold uppercase tracking-[0.18em] text-clutch-chocolate/60">
           what should we call you?
         </p>
         <input
@@ -39,15 +38,15 @@ function NamePrompt() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && submit()}
-          placeholder="your name…"
+          placeholder="YOUR NAME"
           autoFocus
-          className="mt-4 w-full rounded-full border border-clutch-ink/20 bg-white px-4 py-2.5 text-center font-phone-display text-[14px] italic text-clutch-ink placeholder:not-italic placeholder:text-clutch-chocolate/35 focus:border-clutch-hot focus:outline-none"
+          className="riso-edge mt-4 w-full border-2 border-clutch-ink bg-white px-4 py-2.5 text-center font-phone-body text-[13px] uppercase tracking-wide text-clutch-ink placeholder:text-clutch-chocolate/30 focus:outline-none"
         />
         <button
           onClick={submit}
-          className="mt-3 w-full rounded-full bg-clutch-hot px-5 py-2.5 font-phone-body text-[11px] uppercase tracking-[0.12em] text-white transition-transform active:scale-95"
+          className="riso-edge mt-4 w-full border-2 border-clutch-ink bg-pink px-5 py-2.5 font-phone-body text-[11px] font-bold uppercase tracking-[0.12em] text-clutch-cream transition-transform active:scale-95"
         >
-          {name.trim() ? `that's me ✓` : "skip →"}
+          {name.trim() ? "that's me →" : "skip →"}
         </button>
       </div>
     </motion.div>
@@ -75,8 +74,8 @@ export default function Home() {
 
   if (!mounted) {
     return (
-      <main className="bg-desk grid min-h-[100dvh] place-items-center">
-        <p className="font-pinyon text-clutch-hot" style={{ fontSize: 48 }}>
+      <main className="bg-cream-grain grid min-h-[100dvh] place-items-center">
+        <p className="font-pinyon text-clutch-hot" style={{ fontSize: 56 }}>
           clutch
         </p>
       </main>
@@ -88,7 +87,7 @@ export default function Home() {
     state.logs.length >= 2 && !state.savePromptDismissed;
 
   return (
-    <main className="bg-desk min-h-[100dvh] w-full">
+    <main className="bg-cream-grain min-h-[100dvh] w-full">
       {/* name prompt — shown once after the journal first flips open */}
       <AnimatePresence>
         {opened && !state.namePromptDone && (
@@ -96,12 +95,20 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* the closed journal — tap to flip open into your diary */}
+      {/* the closed journal — printed pink field, tap to flip open */}
       {!opened && (
         <div
-          className="bg-desk fixed inset-0 z-[70] flex items-center justify-center p-6"
+          className="bg-riso-pink fixed inset-0 z-[70] flex items-center justify-center p-6"
           style={{ perspective: 1500 }}
         >
+          <div aria-hidden className="grain pointer-events-none absolute inset-0" />
+          <div aria-hidden className="tex-halftone pointer-events-none absolute inset-0 opacity-30" />
+          <div className="pointer-events-none absolute left-4 top-4 font-phone-body text-[9px] uppercase tracking-[0.2em] text-clutch-cream">clutch · 2026</div>
+          <div className="pointer-events-none absolute right-4 top-4 font-phone-body text-[9px] uppercase tracking-[0.2em] text-clutch-cream">vol.01</div>
+          <div className="pointer-events-none absolute inset-x-4 bottom-4 flex items-center justify-between font-phone-body text-[8px] uppercase tracking-[0.18em] text-clutch-cream">
+            <span>food · meds · cycle</span>
+            <span>epi.to.me</span>
+          </div>
           <motion.div
             role="button"
             tabIndex={0}
@@ -115,25 +122,22 @@ export default function Home() {
             onAnimationComplete={() => flipping && setOpened(true)}
             style={{ transformOrigin: "left center", transformStyle: "preserve-3d" }}
             aria-label="open journal to log"
-            className="relative cursor-pointer outline-none"
+            className="relative z-10 cursor-pointer outline-none"
           >
             <JournalCover colorId={state.journalColor} onPickColor={setJournalColor} />
           </motion.div>
         </div>
       )}
 
-      {/* thin orientation — so a total stranger landing here gets it */}
-      <div className="border-b border-clutch-ink/10 bg-white/55 backdrop-blur-sm">
-        <div className="mx-auto flex w-full max-w-md items-center justify-between gap-2 px-4 py-2">
-          <p className="font-phone-body text-[10px] leading-tight text-clutch-chocolate/75">
-            <span className="font-phone-display text-[12px] italic text-clutch-hot">
-              clutch
-            </span>{" "}
-            · log your food + meds, we connect the dots to your cycle.
+      {/* riso ticker strip */}
+      <div className="border-b-2 border-clutch-ink bg-pink">
+        <div className="mx-auto flex w-full max-w-md items-center justify-between gap-2 px-4 py-1.5">
+          <p className="truncate font-phone-body text-[9px] font-bold uppercase tracking-[0.12em] text-clutch-cream">
+            clutch · food + meds → cycle dots
           </p>
           <Link
             href="/landing-page"
-            className="shrink-0 font-phone-body text-[9px] uppercase tracking-[0.12em] text-clutch-hot underline-offset-2 hover:underline"
+            className="shrink-0 font-phone-body text-[9px] font-bold uppercase tracking-[0.12em] text-clutch-cream underline underline-offset-2"
           >
             what&apos;s this?
           </Link>
@@ -154,68 +158,65 @@ export default function Home() {
         )}
 
         {/* the diary — a page per day */}
-        <section className="mt-7">
-          <div className="mb-1 flex items-baseline gap-2 px-1">
-            <h2 className="font-pinyon text-clutch-hot" style={{ fontSize: 30, lineHeight: 0.9 }}>
+        <section className="mt-6">
+          <div className="mb-2 flex items-baseline justify-between px-0.5">
+            <h2 className="font-grotesk font-bold lowercase leading-none tracking-tight text-clutch-ink" style={{ fontSize: 26 }}>
               your diary
             </h2>
-            <span className="font-phone-body text-[9px] uppercase tracking-[0.16em] text-clutch-chocolate/45">
-              flip through your days
+            <span className="font-phone-body text-[8px] uppercase tracking-[0.16em] text-clutch-chocolate/45">
+              [ tap to flip ]
             </span>
           </div>
 
           <BookView state={state} onAdd={openSheet} />
         </section>
 
-        {/* soft save prompt — after the dopamine, never before */}
+        {/* save prompt — riso */}
         {showSavePrompt && (
-          <div className="animate-card-pop relative mt-7 flex items-center gap-3 rounded-2xl border-2 border-clutch-hot bg-clutch-softpink/40 p-3.5">
-            <Bow size={28} className="absolute -left-2 -top-3 z-10 -rotate-12" />
-            <PixelHeart size={16} className="heart-pulse shrink-0" />
-            <div className="min-w-0 flex-1">
-              <p className="font-phone-display text-[13px] italic text-clutch-ink">
-                loving this?
-              </p>
-              <p className="font-phone-body text-[10px] text-clutch-chocolate/70">
-                save your log so it&apos;s still here tomorrow.
-              </p>
+          <div className="animate-card-pop bg-riso-pink riso-edge relative mt-7 overflow-hidden border-2 border-clutch-ink p-3.5">
+            <div aria-hidden className="grain pointer-events-none absolute inset-0" />
+            <div className="relative flex items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="font-grotesk text-[15px] font-bold lowercase leading-none text-clutch-cream">
+                  loving this?
+                </p>
+                <p className="mt-1 font-phone-body text-[9px] uppercase tracking-[0.1em] text-clutch-cream/85">
+                  save your log so it&apos;s here tomorrow
+                </p>
+              </div>
+              <Link
+                href="/access"
+                className="riso-edge shrink-0 border-2 border-clutch-ink bg-acid px-3 py-1.5 font-phone-body text-[10px] font-bold uppercase tracking-[0.1em] text-clutch-ink active:scale-95"
+              >
+                save →
+              </Link>
+              <button
+                onClick={dismissSavePrompt}
+                aria-label="dismiss"
+                className="shrink-0 font-phone-body text-[12px] text-clutch-cream/70 hover:text-clutch-cream"
+              >
+                ✕
+              </button>
             </div>
-            <Link
-              href="/access"
-              className="shrink-0 rounded-full bg-clutch-hot px-3.5 py-2 font-phone-body text-[10px] uppercase tracking-[0.1em] text-white active:scale-95"
-            >
-              save →
-            </Link>
-            <button
-              onClick={dismissSavePrompt}
-              aria-label="dismiss"
-              className="shrink-0 font-phone-body text-[11px] text-clutch-chocolate/40 hover:text-clutch-hot"
-            >
-              ✕
-            </button>
           </div>
         )}
 
-        {/* quiet disclaimer footer */}
-        <p className="mt-8 px-2 text-center font-phone-body text-[9px] leading-relaxed text-clutch-chocolate/45">
-          clutch surfaces patterns to help you notice — it&apos;s not a medical
-          device and doesn&apos;t diagnose. for anything that feels off, talk to a
-          doctor.
+        {/* disclaimer */}
+        <p className="mt-8 px-2 text-center font-phone-body text-[8px] uppercase leading-relaxed tracking-[0.12em] text-clutch-chocolate/45">
+          clutch surfaces patterns — not a medical device, doesn&apos;t diagnose.
+          anything off, talk to a doctor.
         </p>
       </div>
 
-      {/* the "+" — rose, star */}
+      {/* the "+" — flat riso star sticker */}
       {!sheetOpen && (
         <button
           onClick={() => openSheet("food")}
           aria-label="log food or meds"
-          className="fab-star fixed bottom-6 right-[max(1.5rem,calc(50%-13rem))] z-40 grid h-16 w-16 place-items-center rounded-full shadow-[0_8px_24px_rgba(214,51,108,0.45)] transition-transform active:scale-90"
-          style={{
-            background: "radial-gradient(circle at 35% 30%, #FF8FB4, #D6336C 75%)",
-          }}
+          className="riso-edge fixed bottom-6 right-[max(1.25rem,calc(50%-13rem))] z-40 grid h-14 w-14 place-items-center border-2 border-clutch-ink bg-pink transition-transform active:scale-90"
         >
-          <FourPointStar size={30} color="#FFFFFF" />
-          <span className="absolute bottom-1 right-1.5 font-phone-body text-[13px] font-bold text-white">
+          <FourPointStar size={26} color="#FBF6EC" />
+          <span className="absolute -right-2 -top-2 grid h-5 w-5 place-items-center border-2 border-clutch-ink bg-acid font-phone-body text-[12px] font-bold text-clutch-ink">
             +
           </span>
         </button>
