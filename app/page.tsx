@@ -14,8 +14,8 @@ import LogSheet from "./components/app/LogSheet";
 import JournalCover from "./components/app/JournalCover";
 import { FourPointStar } from "./components/phone/decorations";
 
-function NamePrompt() {
-  const [name, setName] = useState("");
+function NamePrompt({ initial = "" }: { initial?: string }) {
+  const [name, setName] = useState(initial);
 
   const submit = () => setUserName(name);
 
@@ -91,7 +91,7 @@ export default function Home() {
       {/* name prompt — shown FIRST, before the journal can be opened */}
       <AnimatePresence>
         {!state.namePromptDone && (
-          <NamePrompt />
+          <NamePrompt initial={state.userName} />
         )}
       </AnimatePresence>
 

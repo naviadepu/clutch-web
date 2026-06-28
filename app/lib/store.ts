@@ -267,6 +267,11 @@ export function setUserName(name: string) {
   setState({ ...state, userName: name.trim(), namePromptDone: true });
 }
 
+// re-open the name prompt so the user can change their name
+export function editName() {
+  setState({ ...state, namePromptDone: false });
+}
+
 export function toggleCalorieBar() {
   setState({ ...state, showCalorieBar: !state.showCalorieBar });
 }

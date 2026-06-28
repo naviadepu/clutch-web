@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cycleDay, currentPhase, PHASES, ribbonCells } from "../../lib/cycle";
-import type { ClutchState } from "../../lib/store";
+import { editName, type ClutchState } from "../../lib/store";
 import CycleDrawer from "./CycleDrawer";
 
 /** the greeting + cycle ribbon. "hi, navi · day 14 · ovulating."
@@ -19,9 +19,18 @@ export default function CycleHeader({ state }: { state: ClutchState }) {
     <header className="px-1">
       <div className="flex items-end justify-between">
         <div>
-          <p className="font-grotesk font-bold lowercase leading-none tracking-tight text-clutch-ink" style={{ fontSize: 38 }}>
-            hi, {state.userName || "you"}.
-          </p>
+          <button
+            onClick={editName}
+            aria-label="change your name"
+            className="group flex items-baseline gap-1.5 text-left"
+          >
+            <span className="font-grotesk font-bold lowercase leading-none tracking-tight text-clutch-ink" style={{ fontSize: 38 }}>
+              hi, {state.userName || "you"}.
+            </span>
+            <span className="font-phone-body text-[9px] uppercase tracking-[0.12em] text-clutch-ink/30 transition-colors group-hover:text-clutch-hot">
+              ✎
+            </span>
+          </button>
           <p className="mt-1.5 flex items-center gap-1.5 font-phone-body text-[10px] font-bold uppercase tracking-[0.18em] text-clutch-ink">
             <span>day {day}</span>
             <span aria-hidden>·</span>
