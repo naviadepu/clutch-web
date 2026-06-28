@@ -88,27 +88,19 @@ export default function Home() {
 
   return (
     <main className="bg-cream-grain min-h-[100dvh] w-full">
-      {/* name prompt — shown once after the journal first flips open */}
+      {/* name prompt — shown FIRST, before the journal can be opened */}
       <AnimatePresence>
-        {opened && !state.namePromptDone && (
+        {!state.namePromptDone && (
           <NamePrompt />
         )}
       </AnimatePresence>
 
-      {/* the closed journal — printed pink field, tap to flip open */}
+      {/* the closed journal — light frame, the cover fills it. tap to flip open */}
       {!opened && (
         <div
-          className="bg-riso-pink fixed inset-0 z-[70] flex items-center justify-center p-6"
+          className="bg-cream-grain fixed inset-0 z-[70] flex items-center justify-center p-3"
           style={{ perspective: 1500 }}
         >
-          <div aria-hidden className="grain pointer-events-none absolute inset-0" />
-          <div aria-hidden className="tex-halftone pointer-events-none absolute inset-0 opacity-30" />
-          <div className="pointer-events-none absolute left-4 top-4 font-phone-body text-[9px] uppercase tracking-[0.2em] text-clutch-cream">clutch · 2026</div>
-          <div className="pointer-events-none absolute right-4 top-4 font-phone-body text-[9px] uppercase tracking-[0.2em] text-clutch-cream">vol.01</div>
-          <div className="pointer-events-none absolute inset-x-4 bottom-4 flex items-center justify-between font-phone-body text-[8px] uppercase tracking-[0.18em] text-clutch-cream">
-            <span>food · meds · cycle</span>
-            <span>epi.to.me</span>
-          </div>
           <motion.div
             role="button"
             tabIndex={0}
@@ -122,7 +114,7 @@ export default function Home() {
             onAnimationComplete={() => flipping && setOpened(true)}
             style={{ transformOrigin: "left center", transformStyle: "preserve-3d" }}
             aria-label="open journal to log"
-            className="relative z-10 cursor-pointer outline-none"
+            className="relative z-10 w-full max-w-[380px] cursor-pointer outline-none"
           >
             <JournalCover colorId={state.journalColor} onPickColor={setJournalColor} />
           </motion.div>
