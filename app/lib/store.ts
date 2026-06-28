@@ -78,7 +78,7 @@ function freshState(): ClutchState {
   return {
     cycleStartISO: defaultCycleStartISO(),
     defaultCuisine: "indian",
-    journalColor: "rose",
+    journalColor: "peach",
     meds: [],
     logs: [],
     savedPatternIds: [],

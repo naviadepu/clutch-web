@@ -9,7 +9,8 @@ export type JournalColorId =
   | "butter"
   | "sage"
   | "sky"
-  | "cream";
+  | "cream"
+  | "black";
 
 export type JournalColor = {
   id: JournalColorId;
@@ -26,6 +27,7 @@ export const JOURNAL_COLORS: JournalColor[] = [
   { id: "sage", label: "blush", base: "#FFB3D4", ink: "#C8235F" },
   { id: "sky", label: "sky", base: "#9FC3E8", ink: "#1B1417" },
   { id: "cream", label: "cream", base: "#EADBC4", ink: "#C8235F" },
+  { id: "black", label: "black", base: "#1B1417", ink: "#FBF6EC" },
 ];
 
 export const JOURNAL_COLOR_BY_ID: Record<JournalColorId, JournalColor> =
